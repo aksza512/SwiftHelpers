@@ -7,6 +7,10 @@
 
 import UIKit
 
-class BViewController: UIViewController {
+open class BViewController: UIViewController {
+    @IBOutlet weak var tableView: UITableView!
     
+    @IBAction func closeButtonPressed(_ button: UIButton) {
+        dismiss(animated: true, completion: nil)
+    }
 }
