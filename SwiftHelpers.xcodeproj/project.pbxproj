@@ -22,6 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		970DDB1C23740ECA0091C221 /* BViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB1B23740ECA0091C221 /* BViewController.swift */; };
+		970DDB35237420680091C221 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB33237420670091C221 /* UITableViewExtension.swift */; };
+		970DDB36237420680091C221 /* UINavigationBarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB34237420670091C221 /* UINavigationBarExtension.swift */; };
 		OBJ_23 /* SwiftHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* SwiftHelpers.swift */; };
 		OBJ_30 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_41 /* SwiftHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SwiftHelpersTests.swift */; };
@@ -48,6 +50,8 @@
 
 /* Begin PBXFileReference section */
 		970DDB1B23740ECA0091C221 /* BViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BViewController.swift; sourceTree = "<group>"; };
+		970DDB33237420670091C221 /* UITableViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
+		970DDB34237420670091C221 /* UINavigationBarExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationBarExtension.swift; sourceTree = "<group>"; };
 		OBJ_12 /* SwiftHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftHelpersTests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* DerivedData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DerivedData; sourceTree = SOURCE_ROOT; };
@@ -103,7 +107,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -112,7 +116,6 @@
 				OBJ_14 /* Products */,
 				OBJ_17 /* DerivedData */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -126,6 +129,8 @@
 		OBJ_8 /* SwiftHelpers */ = {
 			isa = PBXGroup;
 			children = (
+				970DDB34237420670091C221 /* UINavigationBarExtension.swift */,
+				970DDB33237420670091C221 /* UITableViewExtension.swift */,
 				OBJ_9 /* SwiftHelpers.swift */,
 				970DDB1B23740ECA0091C221 /* BViewController.swift */,
 			);
@@ -199,7 +204,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_14 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -217,6 +222,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				970DDB35237420680091C221 /* UITableViewExtension.swift in Sources */,
+				970DDB36237420680091C221 /* UINavigationBarExtension.swift in Sources */,
 				OBJ_23 /* SwiftHelpers.swift in Sources */,
 				970DDB1C23740ECA0091C221 /* BViewController.swift in Sources */,
 			);
