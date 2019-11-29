@@ -9,7 +9,7 @@ HTTPResponse:
 
 
 public enum Country: String {
-    case hu = "hu"
+    case hu
 }
 
 struct ResultArray<T: Codable>: Codable {
