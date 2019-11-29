@@ -1,6 +1,6 @@
 # SwiftHelpers
 
-A description of this package.
+## Example
 
 public enum Country: String {
     case hu = "hu"
@@ -34,3 +34,14 @@ extension NameDayApi: EndPoint {
         }
     }
 }
+
+## Create request
+
+Router<NameDayApi>.init().request(.today(country: .hu)) { (result: Result<ResultArray<NameDay>, Error>) in
+	switch result {
+		case .success(let result): ...
+		case .failure(let error): ...
+	}
+}
+
+
