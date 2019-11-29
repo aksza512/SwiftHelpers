@@ -15,7 +15,7 @@ public class Router<T: EndPoint> {
 		
 	}
 	
-	public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, Error>) -> ()) -> URLSessionTask? {
+	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, Error>) -> ()) -> URLSessionTask? {
 		var task: URLSessionTask?
         do {
             let request = try self.buildRequest(from: endPoint)
