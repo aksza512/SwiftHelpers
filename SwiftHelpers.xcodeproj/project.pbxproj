@@ -24,6 +24,14 @@
 		970DDB1C23740ECA0091C221 /* BViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB1B23740ECA0091C221 /* BViewController.swift */; };
 		970DDB35237420680091C221 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB33237420670091C221 /* UITableViewExtension.swift */; };
 		970DDB36237420680091C221 /* UINavigationBarExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 970DDB34237420670091C221 /* UINavigationBarExtension.swift */; };
+		9748427A239120F000345A9D /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484272239120F000345A9D /* Router.swift */; };
+		9748427B239120F000345A9D /* URLParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484273239120F000345A9D /* URLParameterEncoding.swift */; };
+		9748427C239120F000345A9D /* JSONParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484274239120F000345A9D /* JSONParameterEncoder.swift */; };
+		9748427D239120F000345A9D /* RequestType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484275239120F000345A9D /* RequestType.swift */; };
+		9748427E239120F000345A9D /* NetworkLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484276239120F000345A9D /* NetworkLogger.swift */; };
+		9748427F239120F000345A9D /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484277239120F000345A9D /* HTTPMethod.swift */; };
+		97484280239120F000345A9D /* EndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484278239120F000345A9D /* EndPoint.swift */; };
+		97484281239120F000345A9D /* ParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97484279239120F000345A9D /* ParameterEncoding.swift */; };
 		OBJ_23 /* SwiftHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* SwiftHelpers.swift */; };
 		OBJ_30 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_41 /* SwiftHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SwiftHelpersTests.swift */; };
@@ -52,6 +60,14 @@
 		970DDB1B23740ECA0091C221 /* BViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BViewController.swift; sourceTree = "<group>"; };
 		970DDB33237420670091C221 /* UITableViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
 		970DDB34237420670091C221 /* UINavigationBarExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationBarExtension.swift; sourceTree = "<group>"; };
+		97484272239120F000345A9D /* Router.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		97484273239120F000345A9D /* URLParameterEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = URLParameterEncoding.swift; path = ../URLParameterEncoding.swift; sourceTree = "<group>"; };
+		97484274239120F000345A9D /* JSONParameterEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONParameterEncoder.swift; path = ../JSONParameterEncoder.swift; sourceTree = "<group>"; };
+		97484275239120F000345A9D /* RequestType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestType.swift; sourceTree = "<group>"; };
+		97484276239120F000345A9D /* NetworkLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkLogger.swift; sourceTree = "<group>"; };
+		97484277239120F000345A9D /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		97484278239120F000345A9D /* EndPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndPoint.swift; sourceTree = "<group>"; };
+		97484279239120F000345A9D /* ParameterEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ParameterEncoding.swift; path = ../ParameterEncoding.swift; sourceTree = "<group>"; };
 		OBJ_12 /* SwiftHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftHelpersTests.swift; sourceTree = "<group>"; };
 		OBJ_13 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_17 /* DerivedData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DerivedData; sourceTree = SOURCE_ROOT; };
@@ -80,6 +96,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		974842822391213C00345A9D /* Encoder */ = {
+			isa = PBXGroup;
+			children = (
+				97484274239120F000345A9D /* JSONParameterEncoder.swift */,
+				97484279239120F000345A9D /* ParameterEncoding.swift */,
+				97484273239120F000345A9D /* URLParameterEncoding.swift */,
+			);
+			path = Encoder;
+			sourceTree = "<group>";
+		};
+		977A2179238D5A0000A3785E /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				974842822391213C00345A9D /* Encoder */,
+				97484278239120F000345A9D /* EndPoint.swift */,
+				97484277239120F000345A9D /* HTTPMethod.swift */,
+				97484276239120F000345A9D /* NetworkLogger.swift */,
+				97484275239120F000345A9D /* RequestType.swift */,
+				97484272239120F000345A9D /* Router.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +168,7 @@
 		OBJ_8 /* SwiftHelpers */ = {
 			isa = PBXGroup;
 			children = (
+				977A2179238D5A0000A3785E /* Network */,
 				970DDB34237420670091C221 /* UINavigationBarExtension.swift */,
 				970DDB33237420670091C221 /* UITableViewExtension.swift */,
 				OBJ_9 /* SwiftHelpers.swift */,
@@ -224,8 +264,16 @@
 			files = (
 				970DDB35237420680091C221 /* UITableViewExtension.swift in Sources */,
 				970DDB36237420680091C221 /* UINavigationBarExtension.swift in Sources */,
+				9748427A239120F000345A9D /* Router.swift in Sources */,
 				OBJ_23 /* SwiftHelpers.swift in Sources */,
+				97484280239120F000345A9D /* EndPoint.swift in Sources */,
+				9748427B239120F000345A9D /* URLParameterEncoding.swift in Sources */,
+				97484281239120F000345A9D /* ParameterEncoding.swift in Sources */,
+				9748427C239120F000345A9D /* JSONParameterEncoder.swift in Sources */,
+				9748427E239120F000345A9D /* NetworkLogger.swift in Sources */,
 				970DDB1C23740ECA0091C221 /* BViewController.swift in Sources */,
+				9748427F239120F000345A9D /* HTTPMethod.swift in Sources */,
+				9748427D239120F000345A9D /* RequestType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
