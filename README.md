@@ -1,6 +1,4 @@
-# SwiftHelpers
-
-## Example
+# Network Example
 
 public enum Country: String {
     case hu = "hu"
