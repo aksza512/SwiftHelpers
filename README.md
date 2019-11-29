@@ -19,7 +19,7 @@ struct ResultArray<T: Codable>: Codable {
 public struct NameDay: Codable {
     let day: Int
     let month: Int
-	let name_hu: String
+    let name_hu: String
 }
 
 public enum NameDayApi {
