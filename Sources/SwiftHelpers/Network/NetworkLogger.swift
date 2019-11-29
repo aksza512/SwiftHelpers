@@ -10,13 +10,12 @@ import Foundation
 
 open class NetworkLogger {
     static func log(request: URLRequest) {
-        
         print("\n - - - - - - - - - - OUTGOING - - - - - - - - - - \n")
         defer { print("\n - - - - - - - - - -  END - - - - - - - - - - \n") }
-        
+
         let urlAsString = request.url?.absoluteString ?? ""
         let urlComponents = NSURLComponents(string: urlAsString)
-        
+
         let method = request.httpMethod != nil ? "\(request.httpMethod ?? "")" : ""
         let path = "\(urlComponents?.path ?? "")"
         let query = "\(urlComponents?.query ?? "")"
@@ -33,7 +32,7 @@ open class NetworkLogger {
         if let body = request.httpBody {
             logOutput += "\n \(NSString(data: body, encoding: String.Encoding.utf8.rawValue) ?? "")"
         }
-        
+
         print(logOutput)
     }
     

@@ -1,4 +1,8 @@
 # Network Example
+
+JSON: 
+{"data":{"day":29,"month":11,"name_hu":"Taksony"}}
+
 ```swift
 public enum Country: String {
     case hu = "hu"
