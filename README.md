@@ -4,7 +4,7 @@
 ```swift
 HTTPRequest:
 	https://api.abalin.net/get/today?country=hu
-JSON: 
+HTTPResponse: 
 	{"data":{"day":29,"month":11,"name_hu":"Taksony"}}
 
 
