@@ -35,7 +35,7 @@ extension NameDayApi: EndPoint {
 ```
 ## Create request
 ```swift
-Router<NameDayApi>.init().request(.today(country: .hu)) { (result: Result<ResultArray<NameDay>, Error>) in
+Router<NameDayApi>().request(.today(country: .hu)) { (result: Result<ResultArray<NameDay>, Error>) in
 	switch result {
 		case .success(let result): ...
 		case .failure(let error): ...
