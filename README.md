@@ -2,6 +2,8 @@
 
 
 ```swift
+HTTPRequest:
+	https://api.abalin.net/get/today?country=hu
 JSON: 
 	{"data":{"day":29,"month":11,"name_hu":"Taksony"}}
 
