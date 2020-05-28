@@ -13,4 +13,10 @@ open class BViewController: UIViewController {
     @IBAction func closeButtonPressed(_ button: UIButton) {
         dismiss(animated: true, completion: nil)
     }
+	
+    @IBAction func backNavbarButtonPressed(_ button: UIButton) {
+		if let navController = self.navigationController {
+			navController.popViewController(animated: true)
+		}
+    }
 }
