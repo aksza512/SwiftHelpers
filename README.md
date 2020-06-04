@@ -53,25 +53,44 @@ router.request(.today(country: .hu)) { (result: Result<ResultArray<NameDay>, Err
 ```
 ## Handle authorization error
 ```swift
-class MyRouterConfig {
-	static let instance = RouterConfig()
+
+class TestRouterConfig {
+	static let instance = TestRouterConfig()
+	let routerConfig = RouterConfig.instance
+	var refreshTask: URLSessionTask?
 	
 	init() {
-		RouterConfig.instance.routerConfigDelegate = self
-		// Ha van már elmentett token akkor beállíthatjuk extra headernek	
-		let extraHeaders = ["Authorization": UserDefaults.standard.value(forKey: "auth") as! String]
-		RouterConfig.instance.extraHeaders = extraHeaders
+		routerConfig.routerConfigDelegate = self
+		// Ha van már elmentett token akkor beállíthatjuk extra headernek
+		let extraHeaders = ["Authorization": UserDefaults.standard.value(forKey: "auth") as! String,
+							"channel": "IOS",
+							"deviceId": "asdfasfasdf",
+							"apiLevel": "111",
+							"buildNumber": "1234243"]
+		routerConfig.extraHeaders = extraHeaders
 	}
 }
 
 extension TestRouterConfig: RouterConfigDelegate {
-	// Itt elvégezhetjük a token refresht, utána pedig lefut az eredeti hívás az új tokennel 
-	func handleAuthorizationError(_ completion: (_ success: Bool) -> ()) {
-		UserDefaults.standard.set("auth2", forKey: "auth")
-		UserDefaults.standard.set("ref2", forKey: "ref")
-		let extraHeaders = ["Authorization": UserDefaults.standard.value(forKey: "auth") as! String]
-		RouterConfig.instance.extraHeaders = extraHeaders
-		completion(true)
+	// Itt elvégezhetjük a token refresht, utána pedig lefut az eredeti hívás az új tokennel
+	func handleAuthorizationError() {
+		if refreshTask == nil {
+			let router = Router<LoginApi>()
+			routerConfig.extraHeaders?["Authorization"] = UserDefaults.standard.value(forKey: "ref") as? String
+			refreshTask = router.requestRefresh(.refresh(userId: "210809472")) { [weak self] (result: Result<NetworkResponse<Token>, NetworkError>) in
+				self?.refreshTask = nil
+				switch result {
+				case .success(let response):
+					UserDefaults.standard.set(response.data.Authorization, forKey: "auth")
+					UserDefaults.standard.set(response.data.Refresh, forKey: "ref")
+					self?.routerConfig.extraHeaders?["Authorization"] = UserDefaults.standard.value(forKey: "auth") as? String
+					self?.routerConfig.callRefreshCompletions(success: true)
+				case .failure(_):
+					self?.routerConfig.callRefreshCompletions(success: false)
+				}
+			}
+		}
 	}
 }
 ```
+

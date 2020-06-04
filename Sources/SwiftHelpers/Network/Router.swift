@@ -17,23 +17,33 @@ public class Router<T: EndPoint> {
 	}
 	
 	deinit {
-		print("deinit request")
+	}
+
+	@discardableResult public func requestRefresh<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
+		return requestOrigin(isRefresh: true, endPoint, completion: completion)
 	}
 	
 	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
+		return requestOrigin(isRefresh: false, endPoint, completion: completion)
+	}
+
+	@discardableResult public func requestOrigin<C: Codable>(isRefresh: Bool, _ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		var task: URLSessionTask?
         do {
             var request = try self.buildRequest(from: endPoint)
 			addExtraHeaders(request: &request)
-			NetworkLogger.log(request: request)
             task = session.dataTask(with: request, completionHandler: { data, response, error in
-                guard error == nil else {
-					if let response = response as? HTTPURLResponse {
-						if response.statusCode == 401 || response.statusCode == 403 {
-							self.handleAuthorizationError(endPoint, completion)
+				if let response = response as? HTTPURLResponse {
+					if response.statusCode == 401 || response.statusCode == 403 {
+						if isRefresh {
+							completion(.failure(.tokenRefreshFailed))
 							return
 						}
+						self.handleAuthorizationError(endPoint, completion)
+						return
 					}
+				}
+                guard error == nil else {
 					completion(.failure(error as! NetworkError))
                     return
                 }
@@ -75,13 +85,15 @@ public class Router<T: EndPoint> {
     }
 	
 	func handleAuthorizationError<C: Codable>(_ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
-		routerConfig.routerConfigDelegate?.handleAuthorizationError({ [weak self] (successRefresh) in
+		let completionBlock: (_ success: Bool) -> () = { (successRefresh) in
 			if !successRefresh {
 				completion(.failure(.tokenRefreshFailed))
 			} else {
-				self?.request(endPoint, completion: completion)
+				self.request(endPoint, completion: completion)
 			}
-		})
+		}
+		routerConfig.refreshTokenCompletions.append(completionBlock)
+		routerConfig.routerConfigDelegate?.handleAuthorizationError()
 	}
 	
 	func addExtraHeaders(request: inout URLRequest) {

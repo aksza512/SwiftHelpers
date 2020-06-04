@@ -7,13 +7,23 @@
 
 import Foundation
 
+public typealias RefreshTokenCompletionBlock = (_ success: Bool) -> ()
+
 public protocol RouterConfigDelegate: class {
 	// Authorization error 401/403
-	func handleAuthorizationError(_ completion: (_ successRefresh: Bool) -> ());
+	func handleAuthorizationError();
 }
 
 open class RouterConfig {
 	public static let instance = RouterConfig()
 	open weak var routerConfigDelegate: RouterConfigDelegate?
 	open var extraHeaders: [String: String]?
+	open var refreshTokenCompletions = [RefreshTokenCompletionBlock]()
+	
+	open func callRefreshCompletions(success: Bool) {
+		for completion in refreshTokenCompletions {
+			completion(success)
+		}
+		refreshTokenCompletions.removeAll()
+	}
 }

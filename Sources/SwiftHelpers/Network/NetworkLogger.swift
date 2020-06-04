@@ -36,5 +36,9 @@ open class NetworkLogger {
         print(logOutput)
     }
     
-    static func log(response: URLResponse) {}
+    static func log(response: URLResponse) {
+		if let response = response as? HTTPURLResponse {
+			print("STATUS CODE: \(response.statusCode)")
+		}
+	}
 }
