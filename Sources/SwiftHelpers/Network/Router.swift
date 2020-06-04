@@ -10,19 +10,31 @@ import Foundation
 
 public class Router<T: EndPoint> {
 	let session = URLSession.shared
+	let routerConfig = RouterConfig.instance
 
 	public init() {
 		
 	}
 	
-	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, Error>) -> ()) -> URLSessionTask? {
+	deinit {
+		print("deinit request")
+	}
+	
+	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		var task: URLSessionTask?
         do {
-            let request = try self.buildRequest(from: endPoint)
-            NetworkLogger.log(request: request)
+            var request = try self.buildRequest(from: endPoint)
+			addExtraHeaders(request: &request)
+			NetworkLogger.log(request: request)
             task = session.dataTask(with: request, completionHandler: { data, response, error in
                 guard error == nil else {
-                    completion(.failure(error!))
+					if let response = response as? HTTPURLResponse {
+						if response.statusCode == 401 || response.statusCode == 403 {
+							self.handleAuthorizationError(endPoint, completion)
+							return
+						}
+					}
+					completion(.failure(error as! NetworkError))
                     return
                 }
                 guard response != nil, let data = data else { return }
@@ -32,12 +44,12 @@ public class Router<T: EndPoint> {
                 }
             })
         } catch {
-            completion(.failure(error))
+            completion(.failure(error as! NetworkError))
         }
         task?.resume()
 		return task
     }
-
+	
 	fileprivate func buildRequest(from endPoint: T) throws -> URLRequest {
         var request = URLRequest(url: endPoint.baseURL.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
         request.httpMethod = endPoint.httpMethod.rawValue
@@ -61,5 +73,23 @@ public class Router<T: EndPoint> {
             throw error
         }
     }
+	
+	func handleAuthorizationError<C: Codable>(_ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
+		routerConfig.routerConfigDelegate?.handleAuthorizationError({ [weak self] (successRefresh) in
+			if !successRefresh {
+				completion(.failure(.tokenRefreshFailed))
+			} else {
+				self?.request(endPoint, completion: completion)
+			}
+		})
+	}
+	
+	func addExtraHeaders(request: inout URLRequest) {
+		if let extraHeaders = routerConfig.extraHeaders {
+			for (key, value) in extraHeaders {
+				request.setValue(value, forHTTPHeaderField: key)
+			}
+		}
+	}
 }
 

@@ -51,4 +51,27 @@ router.request(.today(country: .hu)) { (result: Result<ResultArray<NameDay>, Err
 	}
 }
 ```
+## Handle authorization error
+```swift
+class MyRouterConfig {
+	static let instance = RouterConfig()
+	
+	init() {
+		RouterConfig.instance.routerConfigDelegate = self
+		// Ha van már elmentett token akkor beállíthatjuk extra headernek	
+		let extraHeaders = ["Authorization": UserDefaults.standard.value(forKey: "auth") as! String]
+		RouterConfig.instance.extraHeaders = extraHeaders
+	}
+}
 
+extension TestRouterConfig: RouterConfigDelegate {
+	// Itt elvégezhetjük a token refresht, utána pedig lefut az eredeti hívás az új tokennel 
+	func handleAuthorizationError(_ completion: (_ success: Bool) -> ()) {
+		UserDefaults.standard.set("auth2", forKey: "auth")
+		UserDefaults.standard.set("ref2", forKey: "ref")
+		let extraHeaders = ["Authorization": UserDefaults.standard.value(forKey: "auth") as! String]
+		RouterConfig.instance.extraHeaders = extraHeaders
+		completion(true)
+	}
+}
+```
