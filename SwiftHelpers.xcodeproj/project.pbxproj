@@ -23,6 +23,9 @@
 /* Begin PBXBuildFile section */
 		58D748AB24EA7AD900BD2B76 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D748AA24EA7AD900BD2B76 /* UIViewExtension.swift */; };
 		58D748AD24EA7BB800BD2B76 /* WaitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D748AC24EA7BB800BD2B76 /* WaitView.swift */; };
+		58D748AF24EA7E6700BD2B76 /* RouterConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D748AE24EA7E6700BD2B76 /* RouterConfig.swift */; };
+		58D748B124EA7E8C00BD2B76 /* BView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D748B024EA7E8C00BD2B76 /* BView.swift */; };
+		58D748B324EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D748B224EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift */; };
 		58F34DC5248959A600891094 /* ParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F34DC2248959A600891094 /* ParameterEncoding.swift */; };
 		58F34DC6248959A600891094 /* URLParameterEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F34DC3248959A600891094 /* URLParameterEncoding.swift */; };
 		58F34DC7248959A600891094 /* JSONParameterEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F34DC4248959A600891094 /* JSONParameterEncoder.swift */; };
@@ -60,6 +63,9 @@
 /* Begin PBXFileReference section */
 		58D748AA24EA7AD900BD2B76 /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
 		58D748AC24EA7BB800BD2B76 /* WaitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitView.swift; sourceTree = "<group>"; };
+		58D748AE24EA7E6700BD2B76 /* RouterConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RouterConfig.swift; sourceTree = "<group>"; };
+		58D748B024EA7E8C00BD2B76 /* BView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BView.swift; sourceTree = "<group>"; };
+		58D748B224EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadingAnimationView.swift; sourceTree = "<group>"; };
 		58F34DC2248959A600891094 /* ParameterEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterEncoding.swift; sourceTree = "<group>"; };
 		58F34DC3248959A600891094 /* URLParameterEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLParameterEncoding.swift; sourceTree = "<group>"; };
 		58F34DC4248959A600891094 /* JSONParameterEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONParameterEncoder.swift; sourceTree = "<group>"; };
@@ -102,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				970DDB1B23740ECA0091C221 /* BViewController.swift */,
+				58D748B024EA7E8C00BD2B76 /* BView.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -128,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				58D748AC24EA7BB800BD2B76 /* WaitView.swift */,
+				58D748B224EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift */,
 			);
 			path = WaitView;
 			sourceTree = "<group>";
@@ -145,6 +153,7 @@
 		977A2179238D5A0000A3785E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				58D748AE24EA7E6700BD2B76 /* RouterConfig.swift */,
 				58F34DC12489598B00891094 /* Encoder */,
 				97484278239120F000345A9D /* EndPoint.swift */,
 				97484277239120F000345A9D /* HTTPMethod.swift */,
@@ -303,11 +312,14 @@
 				9748427A239120F000345A9D /* Router.swift in Sources */,
 				97484280239120F000345A9D /* EndPoint.swift in Sources */,
 				58D748AD24EA7BB800BD2B76 /* WaitView.swift in Sources */,
+				58D748AF24EA7E6700BD2B76 /* RouterConfig.swift in Sources */,
+				58D748B324EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift in Sources */,
 				9748427E239120F000345A9D /* NetworkLogger.swift in Sources */,
 				58D748AB24EA7AD900BD2B76 /* UIViewExtension.swift in Sources */,
 				58F34DC6248959A600891094 /* URLParameterEncoding.swift in Sources */,
 				58F34DC7248959A600891094 /* JSONParameterEncoder.swift in Sources */,
 				970DDB1C23740ECA0091C221 /* BViewController.swift in Sources */,
+				58D748B124EA7E8C00BD2B76 /* BView.swift in Sources */,
 				9748427F239120F000345A9D /* HTTPMethod.swift in Sources */,
 				9748427D239120F000345A9D /* RequestType.swift in Sources */,
 			);
