@@ -18,7 +18,7 @@ public class WaitView: BView {
 		}
 	}()
 	
-	override func initInternals() {
+	override public func initInternals() {
 		super.initInternals()
 		self.alpha = 0.0
 	}

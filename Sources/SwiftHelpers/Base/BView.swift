@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class BView: UIView {
+open class BView: UIView {
 	public override init(frame: CGRect) {
 		super.init(frame: frame)
 		self.initInternals()
@@ -18,12 +18,12 @@ public class BView: UIView {
 		self.initInternals()
 	}
 	
-	required init?(coder aDecoder: NSCoder) {
+	required public init?(coder aDecoder: NSCoder) {
 	   super.init(coder: aDecoder)
 		self.initInternals()
 	}
 	
-	func initInternals() {
+	public func initInternals() {
 		
 	}
 }

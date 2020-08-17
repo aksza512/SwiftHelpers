@@ -8,6 +8,7 @@
 import UIKit
 
 let defaultAnimationDuration = 0.3
+let emptyViewTag = 9876
 
 public extension UIView {
 	// Border
@@ -92,5 +93,30 @@ public extension UIView {
 		UIView.animate(withDuration: defaultAnimationDuration) {
 			self.alpha = 0.0
 		}
+	}
+	
+	func showEmptyView(_ emptyView: EmptyView) {
+		if !self.subviews.contains(emptyView) {
+			emptyView.tag = emptyViewTag
+			addSubview(emptyView)
+			emptyView.translatesAutoresizingMaskIntoConstraints = false
+			emptyView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+			emptyView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+			emptyView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+			if (self.traitCollection.horizontalSizeClass == .regular && self.traitCollection.verticalSizeClass == .regular) {
+				emptyView.leftAnchor.constraint(greaterThanOrEqualTo: self.leftAnchor, constant: 10.0).isActive = true
+				emptyView.rightAnchor.constraint(greaterThanOrEqualTo: self.rightAnchor, constant: 10.0).isActive = true
+				emptyView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+			}
+			else {
+				emptyView.translatesAutoresizingMaskIntoConstraints = true
+				emptyView.frame = self.bounds
+				emptyView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+			}
+		}
+	}
+	
+	func hideEmptyView() {
+		self.viewWithTag(emptyViewTag)?.removeFromSuperview()
 	}
 }

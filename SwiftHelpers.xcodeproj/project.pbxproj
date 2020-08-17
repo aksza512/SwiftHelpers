@@ -126,6 +126,7 @@
 		58D748A824EA789700BD2B76 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				58D748C324EAE40200BD2B76 /* EmptyView */,
 				58D748A924EA789F00BD2B76 /* WaitView */,
 			);
 			path = Components;
@@ -138,6 +139,13 @@
 				58D748B224EAA5E700BD2B76 /* SkeletonLoadingAnimationView.swift */,
 			);
 			path = WaitView;
+			sourceTree = "<group>";
+		};
+		58D748C324EAE40200BD2B76 /* EmptyView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EmptyView;
 			sourceTree = "<group>";
 		};
 		58F34DC12489598B00891094 /* Encoder */ = {
