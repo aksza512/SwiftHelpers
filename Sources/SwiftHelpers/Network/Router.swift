@@ -33,8 +33,13 @@ public class Router<T: EndPoint> {
             var request = try self.buildRequest(from: endPoint)
 			addExtraHeaders(request: &request)
             task = session.dataTask(with: request, completionHandler: { data, response, error in
-				if let response = response as? HTTPURLResponse {
-					if response.statusCode == 401 || response.statusCode == 403 {
+				guard error == nil else {
+					completion(.failure(error as! NetworkError))
+					return
+				}
+				if let httpResponse = response as? HTTPURLResponse {
+					let statusCode = httpResponse.statusCode
+					if statusCode == 401 || statusCode == 403 {
 						if isRefresh {
 							completion(.failure(.tokenRefreshFailed))
 							return
@@ -42,16 +47,17 @@ public class Router<T: EndPoint> {
 						self.handleAuthorizationError(endPoint, completion)
 						return
 					}
+					if (statusCode != 200) {
+						completion(.failure(.basicError))
+						return;
+					}
 				}
-                guard error == nil else {
-					completion(.failure(error as! NetworkError))
-                    return
-                }
-                guard response != nil, let data = data else { return }
-                let responseObject = try! JSONDecoder().decode(C.self, from: data)
-                DispatchQueue.main.async {
-					completion(.success(responseObject))
-                }
+				if let data = data {
+					let responseObject = try! JSONDecoder().decode(C.self, from: data)
+					DispatchQueue.main.async {
+						completion(.success(responseObject))
+					}
+				}
             })
         } catch {
             completion(.failure(error as! NetworkError))

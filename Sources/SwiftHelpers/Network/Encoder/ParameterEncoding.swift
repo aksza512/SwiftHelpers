@@ -45,4 +45,5 @@ public enum NetworkError : Error {
     case encodingFailed
     case missingURL
 	case tokenRefreshFailed
+	case basicError
 }
