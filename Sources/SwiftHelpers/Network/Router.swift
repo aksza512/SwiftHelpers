@@ -46,9 +46,10 @@ public class Router<T: EndPoint> {
 						}
 						self.handleAuthorizationError(endPoint, completion)
 						return
-					}
-					if (statusCode != 200) {
-						completion(.failure(.basicError))
+					} else if statusCode != 200 {
+						if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleCustomError(statusCode), !shouldHandleError {
+							completion(.failure(.basicError))
+						}
 						return;
 					}
 				}

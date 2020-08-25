@@ -12,6 +12,8 @@ public typealias RefreshTokenCompletionBlock = (_ success: Bool) -> ()
 public protocol RouterConfigDelegate: class {
 	// Authorization error 401/403
 	func handleAuthorizationError();
+	// Overwrite customError if needed
+	func shouldHandleCustomError(_ statusCode: Int) -> Bool
 }
 
 open class RouterConfig {
