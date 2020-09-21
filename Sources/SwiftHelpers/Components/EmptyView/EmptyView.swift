@@ -14,11 +14,11 @@ open class EmptyView: BView {
 		super.initInternals()
 	}
 	
-	public func show() {
+	public func showEmptyView() {
 		self.fadeIn()
 	}
 	
-	public func hide() {
+	public func hideEmptyView() {
 		self.fadeOut()
 	}
 }

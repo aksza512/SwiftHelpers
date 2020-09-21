@@ -27,13 +27,13 @@ public class WaitView: BView {
 		addCustomWaitViewOnce(nibName: nibName)
 	}
 	
-	public func show() {
+	public func showWaitView() {
 		addIndicatorOnce()
 		indicatorView.startAnimating()
 		self.fadeIn()
 	}
 	
-	public func hide() {
+	public func hideWaitView() {
 		self.fadeOut()
 		indicatorView.stopAnimating()
 	}

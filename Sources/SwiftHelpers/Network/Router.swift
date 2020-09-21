@@ -26,7 +26,7 @@ public class Router<T: EndPoint> {
 	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		return requestOrigin(isRefresh: false, endPoint, completion: completion)
 	}
-
+	
 	@discardableResult public func requestOrigin<C: Codable>(isRefresh: Bool, _ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		var task: URLSessionTask?
         do {

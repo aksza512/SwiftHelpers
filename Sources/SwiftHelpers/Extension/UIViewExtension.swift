@@ -116,7 +116,70 @@ public extension UIView {
 		}
 	}
 	
-	func hideEmptyView() {
+	func hideEmpty() {
 		self.viewWithTag(emptyViewTag)?.removeFromSuperview()
 	}
+	
+	func hide() {
+		alpha = 0.0
+	}
+
+	func show() {
+		alpha = 1.0
+	}
+
+    var left: CGFloat {
+        set (left) {
+			frame = CGRect(x: left, y: frame.origin.y, width: frame.size.width, height: frame.size.height)
+        }
+        get {
+			frame.origin.x
+		}
+    }
+
+
+    var right: CGFloat {
+        set (right) {
+			frame = CGRect(x: right - self.width, y: frame.origin.y, width: frame.size.width, height: frame.size.height)
+        }
+        get {
+			frame.origin.x + self.width
+		}
+    }
+
+    var width: CGFloat {
+        set (width) {
+			frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: width, height: frame.size.height)
+        }
+        get {
+			frame.size.width
+		}
+    }
+
+    var height: CGFloat {
+        set (height) {
+			frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: height)
+        }
+        get {
+			frame.size.height
+		}
+    }
+
+    var centerX: CGFloat {
+        set (centerX) {
+			frame = CGRect(x: centerX - (width / 2), y: frame.origin.y, width: frame.size.width, height: frame.size.height)
+        }
+        get {
+			width / 2
+		}
+    }
+
+    var centerY: CGFloat {
+        set (centerY) {
+			frame = CGRect(x: frame.origin.x, y: centerY - (height / 2), width: frame.size.width, height: frame.size.height)
+        }
+        get {
+			height / 2
+		}
+    }
 }
