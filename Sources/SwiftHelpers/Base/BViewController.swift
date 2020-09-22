@@ -19,4 +19,12 @@ open class BViewController: UIViewController {
 			navController.popViewController(animated: true)
 		}
     }
+
+	open override func viewDidLoad() {
+		super.viewDidLoad()
+		setupUI()
+	}
+
+	open func setupUI() {
+	}
 }
