@@ -21,7 +21,7 @@ var highlightedColorHandle: UInt8 = 0
 var selectedColorHandle: UInt8 = 0
 var normalColorHandle: UInt8 = 0
 
-extension UIButton {
+public extension UIButton {
 
 	private struct AssociatedKeys {
 		static var targetClosure = "targetClosure"
@@ -38,7 +38,7 @@ extension UIButton {
 		}
 	}
 
-	func addTargetClosure(closure: @escaping UIButtonTargetClosure) {
+	func addTargetClosure(closure: @escaping (UIButton) -> ()) {
 		targetClosure = closure
 		addTarget(self, action: #selector(UIButton.closureAction), for: .touchUpInside)
 	}
@@ -166,4 +166,19 @@ extension UIButton {
 		  }
 	  }
 
+	private var states: [UIControl.State] {
+		return [.normal, .selected, .highlighted, .disabled]
+	}
+
+	func setTitleForAllStates(_ title: String) {
+		states.forEach { self.setTitle(title, for: $0) }
+	}
+
+	func setImageForAllStates(_ image: UIImage) {
+		states.forEach { self.setImage(image, for: $0) }
+	}
+
+	func setTitleColorForAllStates(_ color: UIColor) {
+		states.forEach { self.setTitleColor(color, for: $0) }
+	}
 }
