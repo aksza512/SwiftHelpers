@@ -33,4 +33,14 @@ public extension UIViewController {
 		// http://stackoverflow.com/questions/2777438/how-to-tell-if-uiviewcontrollers-view-is-visible
 		return isViewLoaded && view.window != nil
 	}
+
+	func hideKeyboardOnTap() {
+		let tap = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboard))
+		tap.cancelsTouchesInView = false
+		self.view.addGestureRecognizer(tap)
+	}
+
+	@objc func hideKeyboard() {
+		self.view.endEditing(true)
+	}
 }

@@ -39,11 +39,13 @@ public enum ParameterEncoding {
     }
 }
 
-
-public enum NetworkError : Error {
+public indirect enum NetworkError : Error {
     case parametersNil
     case encodingFailed
     case missingURL
+	case unknown
 	case tokenRefreshFailed
-	case basicError
+	case clientError(_ error: NetworkError)
+	case serverError(_ data: Data?, _ response: HTTPURLResponse?, _ error: NetworkError?)
+	case needLoginForRequest
 }
