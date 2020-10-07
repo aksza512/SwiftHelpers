@@ -7,12 +7,14 @@
 
 import Foundation
 
-public typealias RefreshTokenCompletionBlock = (_ success: Bool) -> Void
+public typealias RefreshTokenCompletionBlock = () -> Void
 public typealias NeedLoginForRequestCompletionBlock = () -> Void
 
 public protocol RouterConfigDelegate: class {
-	// Authorization error 401/403
-	func handleAuthorizationError();
+	// Authorization error 401
+	func handleAuthorizationError(data: Data?)
+	// Authorization error 403
+	func handleLogout()
 	// Overwrite customError if needed
 	func shouldHandleApplicationError(_ statusCode: Int) -> Bool
 	// Is user logged in
@@ -27,9 +29,9 @@ open class RouterConfig {
 	open var refreshTokenCompletions = [RefreshTokenCompletionBlock]()
 	open var needLoginForRequestCompletion: NeedLoginForRequestCompletionBlock?
 
-	open func callRefreshCompletions(success: Bool) {
+	open func callRefreshCompletions() {
 		for completion in refreshTokenCompletions {
-			completion(success)
+			completion()
 		}
 		refreshTokenCompletions.removeAll()
 	}

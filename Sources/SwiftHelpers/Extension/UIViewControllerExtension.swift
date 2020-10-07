@@ -8,29 +8,28 @@
 import UIKit
 
 public extension UIViewController {
-	func showToast(message : String, font: UIFont, toastColor: UIColor = UIColor.white, toastBackground: UIColor = UIColor.black) {
+	func showToast(message : String, font: UIFont = UIFont.systemFont(ofSize: 17.0, weight: .regular), toastColor: UIColor = .white, toastBackground: UIColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.85)) {
 		let toastLabel = UILabel()
 		toastLabel.textColor = toastColor
 		toastLabel.font = font
 		toastLabel.textAlignment = .center
 		toastLabel.text = message
 		toastLabel.alpha = 0.0
-		toastLabel.layer.cornerRadius = 6
+		toastLabel.layer.cornerRadius = 8
 		toastLabel.backgroundColor = toastBackground
 		toastLabel.clipsToBounds  =  true
-		let toastWidth: CGFloat = toastLabel.intrinsicContentSize.width + 16
-		let toastHeight: CGFloat = 32
+		let toastWidth: CGFloat = toastLabel.intrinsicContentSize.width + 24
+		let toastHeight: CGFloat = 44
 		toastLabel.frame = CGRect(x: self.view.frame.width / 2 - (toastWidth / 2), y: self.view.frame.height - (toastHeight * 3), width: toastWidth, height: toastHeight)
 		self.view.addSubview(toastLabel)
-		UIView.animate(withDuration: 1.5, delay: 0.25, options: .autoreverse, animations: {
-			toastLabel.alpha = 1.0
+		UIView.animate(withDuration: 1.5, delay: 0.1, options: .autoreverse, animations: {
+			toastLabel.alpha = 1.2
 		}) { _ in
 			toastLabel.removeFromSuperview()
 		}
 	}
 
 	var isVisible: Bool {
-		// http://stackoverflow.com/questions/2777438/how-to-tell-if-uiviewcontrollers-view-is-visible
 		return isViewLoaded && view.window != nil
 	}
 
@@ -43,4 +42,53 @@ public extension UIViewController {
 	@objc func hideKeyboard() {
 		self.view.endEditing(true)
 	}
+
+	static func topMostViewController() -> UIViewController? {
+	   if #available(iOS 13.0, *) {
+		   let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+		   return keyWindow?.rootViewController?.topMostViewController()
+	   }
+	   return UIApplication.shared.keyWindow?.rootViewController?.topMostViewController()
+	}
+
+	func topMostViewController() -> UIViewController? {
+	   if let navigationController = self as? UINavigationController {
+		   return navigationController.topViewController?.topMostViewController()
+	   }
+	   else if let tabBarController = self as? UITabBarController {
+		   if let selectedViewController = tabBarController.selectedViewController {
+			   return selectedViewController.topMostViewController()
+		   }
+		   return tabBarController.topMostViewController()
+	   }
+	   else if let presentedViewController = self.presentedViewController {
+		   return presentedViewController.topMostViewController()
+	   }
+	   else {
+		   return self
+	   }
+	}
 }
+
+#if DEBUG
+import SwiftUI
+
+@available(iOS 13, *)
+public extension UIViewController {
+	private struct Preview: UIViewControllerRepresentable {
+		let viewController: UIViewController
+
+		func makeUIViewController(context: Context) -> UIViewController {
+			return viewController
+		}
+
+		func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+		}
+	}
+
+	func toPreview() -> some View {
+		Preview(viewController: self)
+	}
+}
+#endif
+

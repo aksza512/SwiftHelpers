@@ -2,8 +2,8 @@
 //  EndPoint.swift
 //  NetworkLayer
 //
-//  Created by Malcolm Kumwenda on 2018/03/05.
-//  Copyright © 2018 Malcolm Kumwenda. All rights reserved.
+//  Created by Alexa Mark on 2018/03/05.
+//  Copyright © 2018 Alexa Mark. All rights reserved.
 //
 
 import Foundation
@@ -13,5 +13,11 @@ public protocol EndPoint {
     var path: String { get }
     var httpMethod: HTTPMethod { get }
     var requestType: RequestType { get }
+}
+
+extension EndPoint {
+	var needLogin: Bool {
+		false
+	}
 }
 

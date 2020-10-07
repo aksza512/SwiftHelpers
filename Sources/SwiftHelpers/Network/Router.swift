@@ -41,29 +41,33 @@ public class Router<T: EndPoint> {
 			addExtraHeaders(request: &request)
             task = session.dataTask(with: request, completionHandler: { data, response, error in
 				// REQUEST HAS NEED LOGIN
-				if let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn(), !isUserLoggedIn {
+				if let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn(), (!isUserLoggedIn && endPoint.needLogin) {
 					self.handleNeedLoginForRequest(endPoint, completion)
 					return
 				}
 				// CLIENT error
 				if error != nil || data == nil {
-					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], CLIENT ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
+					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], CLIENT ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
 					completion(.failure(.clientError((error as? NetworkError) ?? .unknown)))
 					return
 				}
 				// AUTHENTICATION error
-				if let response = response as? HTTPURLResponse, self.isAuthenticationError(response.statusCode) {
-					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], AUTHENTICATION ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
-					if isRefresh {
-						completion(.failure(.tokenRefreshFailed))
-						return
-					}
-					self.handleAuthorizationError(endPoint, completion)
+				// 403
+				if let response = response as? HTTPURLResponse, self.isRefreshTokenError(response.statusCode) {
+					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], REFRESH TOKEN ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
+					self.handleLogout()
+					return
+				}
+				// 401
+				if let response = response as? HTTPURLResponse, self.isAccessTokenError(response.statusCode) {
+					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], ACCESS TOKEN ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
+					if isRefresh { self.handleLogout() }
+					self.handleAuthorizationError(data, endPoint, completion)
 					return
 				}
 				// SERVER error
 				if let response = response as? HTTPURLResponse, self.isRequestFailed(response.statusCode) {
-					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
+					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
 					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode), !shouldHandleError {
 						completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown)))
 					}
@@ -71,7 +75,7 @@ public class Router<T: EndPoint> {
 				}
 				// MIME error
 				guard let mime = response?.mimeType, mime == "application/json" else {
-					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], WRONG MIME TYPE")
+					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], WRONG MIME TYPE, error: (\(error?.localizedDescription ?? ""))")
 					return
 				}
 				// PARSE json
@@ -82,13 +86,15 @@ public class Router<T: EndPoint> {
 							self.logger.info("💜 RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(json.dictionary.debugDescription)]")
 							completion(.success(json))
 						}
+					} else {
+						completion(.success(EmptyResponse() as! C))
 					}
 				} catch let jsonError {
 					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], JSON PARSE FAILED:\(jsonError)")
 				}
             })
         } catch let buildReqError {
-			self.logger.error("❤️ BUILD REQ ERROR:\(buildReqError)")
+			self.logger.error("❤️ BUILD REQ ERROR:\(buildReqError.localizedDescription)")
             completion(.failure(buildReqError as! NetworkError))
         }
         task?.resume()
@@ -120,16 +126,16 @@ public class Router<T: EndPoint> {
         }
     }
 	
-	func handleAuthorizationError<C: Codable>(_ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
-		let completionBlock: (_ success: Bool) -> () = { (successRefresh) in
-			if !successRefresh {
-				completion(.failure(.tokenRefreshFailed))
-			} else {
-				self.request(endPoint, completion: completion)
-			}
+	func handleAuthorizationError<C: Codable>(_ data: Data?, _ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
+		let completionBlock: () -> Void = {
+			self.request(endPoint, completion: completion)
 		}
 		routerConfig.refreshTokenCompletions.append(completionBlock)
-		routerConfig.routerConfigDelegate?.handleAuthorizationError()
+		routerConfig.routerConfigDelegate?.handleAuthorizationError(data: data)
+	}
+
+	func handleLogout() {
+		routerConfig.routerConfigDelegate?.handleLogout()
 	}
 
 	func handleNeedLoginForRequest<C: Codable>(_ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
@@ -152,8 +158,14 @@ public class Router<T: EndPoint> {
 		return ((statusCode < 200) || (statusCode >= 300))
 	}
 
-	func isAuthenticationError(_ statusCode: Int) -> Bool {
-		return statusCode == 401 || statusCode == 403
+	func isAccessTokenError(_ statusCode: Int) -> Bool {
+		return statusCode == 401
+	}
+
+	func isRefreshTokenError(_ statusCode: Int) -> Bool {
+		return statusCode == 403
 	}
 }
 
+public class EmptyResponse: Codable {
+}
