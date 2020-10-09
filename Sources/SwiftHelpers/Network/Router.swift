@@ -33,7 +33,22 @@ public class Router<T: EndPoint> {
 	@discardableResult public func request<C: Codable>(_ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		return requestOrigin(isRefresh: false, endPoint, completion: completion)
 	}
-	
+
+	@discardableResult public func requestAbsolute(_ url: String, completion: @escaping (Result<[String: Any], NetworkError>) -> ()) -> URLSessionTask? {
+		var task: URLSessionTask?
+		var request = URLRequest(url: URL(string: url)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
+		request.httpMethod = "get"
+		addExtraHeaders(request: &request)
+		task = session.dataTask(with: request, completionHandler: { data, response, error in
+			guard let data = data else { return }
+			if let jsonDict = try? JSONSerialization.jsonObject(with: data, options: []) {
+				completion(.success(jsonDict as! [String: Any]))
+			}
+		})
+		task?.resume()
+		return task
+	}
+
 	@discardableResult public func requestOrigin<C: Codable>(isRefresh: Bool, _ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
 		var task: URLSessionTask?
         do {
