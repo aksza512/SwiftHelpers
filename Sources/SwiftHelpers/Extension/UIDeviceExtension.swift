@@ -7,7 +7,7 @@
 
 import UIKit
 
-public extension UIDevice {
+@objc public extension UIDevice {
 	static func isIpad() -> Bool {
 		return UIDevice.current.userInterfaceIdiom == .pad
 	}

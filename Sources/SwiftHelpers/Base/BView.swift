@@ -8,6 +8,12 @@
 import UIKit
 
 open class BView: UIView {
+
+//	init() {
+//		super.init(frame: UIScreen.main.bounds);
+//		self.initInternals()
+//	}
+
 	public override init(frame: CGRect) {
 		super.init(frame: frame)
 		self.initInternals()
@@ -19,11 +25,10 @@ open class BView: UIView {
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
-	   super.init(coder: aDecoder)
-		self.initInternals()
+		super.init(coder: aDecoder)
 	}
 	
-	public func initInternals() {
+	open func initInternals() {
 		
 	}
 }

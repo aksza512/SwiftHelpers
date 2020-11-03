@@ -37,6 +37,13 @@ public extension Array where Element: Equatable {
 	mutating func move(_ element: Element, to newIndex: Index) {
 		if let oldIndex: Int = self.firstIndex(of: element) { self.move(from: oldIndex, to: newIndex) }
 	}
+
+	func contains(array: [Element]) -> Bool {
+		for item in array {
+			if !self.contains(item) { return false }
+		}
+		return true
+	}
 }
 
 public extension Array where Element: Any {

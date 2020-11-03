@@ -37,6 +37,12 @@ public class AlertController {
 		UIViewController.topMostViewController()?.present(uiAlertController, animated: true)
 	}
 
+	public func show(in viewController: UIViewController, sourceView: UIView) {
+		uiAlertController.popoverPresentationController?.sourceView = viewController.view
+		uiAlertController.popoverPresentationController?.sourceRect = sourceView.superview?.convert(sourceView.frame, to: viewController.view) ?? UIView().frame
+		viewController.present(uiAlertController, animated: true)
+	}
+
 	public static func show(title: String?, message: String?, buttonTitle: String?, _ handler: ((UIAlertAction) -> Void)?) {
 		let alert = AlertController(title: title, message: message, style: .alert)
 		alert.addButton(AlertButton(title: buttonTitle ?? "OK", style: .default, handler))

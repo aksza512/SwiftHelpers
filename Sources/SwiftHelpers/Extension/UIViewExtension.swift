@@ -48,7 +48,7 @@ public extension UIView {
     @IBInspectable var shadowRadius: CGFloat {
         set (radius) {
             self.layer.shadowRadius = radius
-            self.layer.masksToBounds = radius > 0
+            self.layer.masksToBounds = false
         }
         get {
             return self.layer.shadowRadius
@@ -58,7 +58,7 @@ public extension UIView {
     @IBInspectable var shadowOpacity: Float {
         set (opacity) {
             self.layer.shadowOpacity = opacity
-            self.layer.masksToBounds = opacity > 0
+            self.layer.masksToBounds = false
         }
         get {
             return self.layer.shadowOpacity

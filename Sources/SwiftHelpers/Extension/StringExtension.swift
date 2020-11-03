@@ -23,4 +23,11 @@ public extension String {
 	   let filtredUnicodeScalars = unicodeScalars.filter { CharacterSet.decimalDigits.contains($0) }
 	   return String(String.UnicodeScalarView(filtredUnicodeScalars))
    }
+
+	func contains(_ string: String, caseSensitive: Bool = true) -> Bool {
+		if !caseSensitive {
+			return range(of: string, options: .caseInsensitive) != nil
+		}
+		return range(of: string) != nil
+	}
 }
