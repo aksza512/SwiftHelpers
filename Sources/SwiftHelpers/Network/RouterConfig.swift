@@ -21,6 +21,9 @@ public protocol RouterConfigDelegate: class {
 	func isUserLoggedIn() -> Bool
 	// Need Login For Request
 	func handleNeedLoginForRequest()
+	// AccessToken
+	func accessToken() -> String?
+	func refreshToken() -> String?
 }
 
 open class RouterConfig {

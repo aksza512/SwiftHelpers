@@ -137,7 +137,6 @@ public extension UIView {
 		}
     }
 
-
     var right: CGFloat {
         set (right) {
 			frame = CGRect(x: right - self.width, y: frame.origin.y, width: frame.size.width, height: frame.size.height)
@@ -202,5 +201,74 @@ public extension UIView {
 		UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
 			self.transform = CGAffineTransform.identity
 		}, completion: nil)
+	}
+
+	func removeAllSubviews() {
+		for view in self.subviews {
+			view.removeFromSuperview()
+		}
+	}
+
+	func roundCorners(corners: UIRectCorner, radius: CGFloat) {
+		 let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+		 let mask = CAShapeLayer()
+		 mask.path = path.cgPath
+		 layer.mask = mask
+	 }
+
+	private func degreesToRadians(_ x: CGFloat) -> CGFloat {
+		return .pi * x / 180.0
+	}
+
+	func stopWiggle() {
+		self.layer.removeAllAnimations()
+		self.transform = .identity
+	}
+
+	func startWiggle(
+		duration: Double = 0.25,
+		displacement: CGFloat = 1.0,
+		degreesRotation: CGFloat = 2.0
+		) {
+		let negativeDisplacement = -1.0 * displacement
+		let position = CAKeyframeAnimation.init(keyPath: "position")
+		position.beginTime = 0.8
+		position.duration = duration
+		position.values = [
+			NSValue(cgPoint: CGPoint(x: negativeDisplacement, y: negativeDisplacement)),
+			NSValue(cgPoint: CGPoint(x: 0, y: 0)),
+			NSValue(cgPoint: CGPoint(x: negativeDisplacement, y: 0)),
+			NSValue(cgPoint: CGPoint(x: 0, y: negativeDisplacement)),
+			NSValue(cgPoint: CGPoint(x: negativeDisplacement, y: negativeDisplacement))
+		]
+		position.calculationMode = CAAnimationCalculationMode(rawValue: "linear")
+		position.isRemovedOnCompletion = false
+		position.repeatCount = Float.greatestFiniteMagnitude
+		position.beginTime = CFTimeInterval(Float(arc4random()).truncatingRemainder(dividingBy: Float(25)) / Float(100))
+		position.isAdditive = true
+
+		let transform = CAKeyframeAnimation.init(keyPath: "transform")
+		transform.beginTime = 2.6
+		transform.duration = duration
+		transform.valueFunction = CAValueFunction(name: CAValueFunctionName.rotateZ)
+		transform.values = [
+			degreesToRadians(-1.0 * degreesRotation),
+			degreesToRadians(degreesRotation),
+			degreesToRadians(-1.0 * degreesRotation)
+		]
+		transform.calculationMode = CAAnimationCalculationMode(rawValue: "linear")
+		transform.isRemovedOnCompletion = false
+		transform.repeatCount = Float.greatestFiniteMagnitude
+		transform.isAdditive = true
+		transform.beginTime = CFTimeInterval(Float(arc4random()).truncatingRemainder(dividingBy: Float(25)) / Float(100))
+		self.layer.add(position, forKey: nil)
+		self.layer.add(transform, forKey: nil)
+	}
+
+	func asImage() -> UIImage {
+		let renderer = UIGraphicsImageRenderer(bounds: bounds)
+		return renderer.image { rendererContext in
+			layer.render(in: rendererContext.cgContext)
+		}
 	}
 }

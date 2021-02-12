@@ -38,7 +38,7 @@ public class Router<T: EndPoint> {
 		var task: URLSessionTask?
 		var request = URLRequest(url: URL(string: url)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
 		request.httpMethod = "get"
-		addExtraHeaders(request: &request)
+		addExtraHeaders(request: &request, isRefresh: false)
 		task = session.dataTask(with: request, completionHandler: { data, response, error in
 			guard let data = data else { return }
 			if let jsonDict = try? JSONSerialization.jsonObject(with: data, options: []) {
@@ -53,17 +53,21 @@ public class Router<T: EndPoint> {
 		var task: URLSessionTask?
         do {
             var request = try self.buildRequest(from: endPoint)
-			addExtraHeaders(request: &request)
+			addExtraHeaders(request: &request, isRefresh: isRefresh)
+			print(request.allHTTPHeaderFields ?? "")
             task = session.dataTask(with: request, completionHandler: { data, response, error in
 				// REQUEST HAS NEED LOGIN
-				if let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn(), (!isUserLoggedIn && endPoint.needLogin) {
+				let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn() ?? false
+				if (!isUserLoggedIn && endPoint.needLogin) {
 					self.handleNeedLoginForRequest(endPoint, completion)
 					return
 				}
 				// CLIENT error
 				if error != nil || data == nil {
 					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], CLIENT ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
-					completion(.failure(.clientError((error as? NetworkError) ?? .unknown)))
+					DispatchQueue.main.async {
+						completion(.failure(.clientError((error as? NetworkError) ?? .unknown)))
+					}
 					return
 				}
 				// AUTHENTICATION error
@@ -76,15 +80,21 @@ public class Router<T: EndPoint> {
 				// 401
 				if let response = response as? HTTPURLResponse, self.isAccessTokenError(response.statusCode) {
 					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], ACCESS TOKEN ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
-					if isRefresh { self.handleLogout() }
-					self.handleAuthorizationError(data, endPoint, completion)
+					if isRefresh {
+						self.handleLogout()
+						completion(.failure(.tokenRefreshFailed))
+					} else {
+						self.handleAuthorizationError(data, endPoint, completion)
+					}
 					return
 				}
 				// SERVER error
 				if let response = response as? HTTPURLResponse, self.isRequestFailed(response.statusCode) {
 					self.logger.error("❤️ RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
 					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode), !shouldHandleError {
-						completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown)))
+						DispatchQueue.main.async {
+							completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown)))
+						}
 					}
 					return
 				}
@@ -98,11 +108,13 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-							self.logger.info("💜 RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(json.dictionary.debugDescription)]")
+							self.logger.info("💜 RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
 							completion(.success(json))
 						}
 					} else {
-						completion(.success(EmptyResponse() as! C))
+						DispatchQueue.main.async {
+							completion(.success(EmptyResponse() as! C))
+						}
 					}
 				} catch let jsonError {
 					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], JSON PARSE FAILED:\(jsonError)")
@@ -110,7 +122,9 @@ public class Router<T: EndPoint> {
             })
         } catch let buildReqError {
 			self.logger.error("❤️ BUILD REQ ERROR:\(buildReqError.localizedDescription)")
-            completion(.failure(buildReqError as! NetworkError))
+			DispatchQueue.main.async {
+				completion(.failure(buildReqError as! NetworkError))
+			}
         }
         task?.resume()
 		return task
@@ -124,8 +138,8 @@ public class Router<T: EndPoint> {
             case .request:
 				logger.info("💛 REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: []")
 			case .requestParameters(let bodyParameters, let bodyEncoding, let urlParameters):
-				logger.info("💛 REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(bodyParameters?.debugDescription ?? "")]")
                 try self.configureParameters(bodyParameters: bodyParameters, bodyEncoding: bodyEncoding, urlParameters: urlParameters, request: &request)
+				logger.info("💛 REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(bodyParameters?.debugDescription ?? "")]")
             }
             return request
         } catch {
@@ -161,12 +175,14 @@ public class Router<T: EndPoint> {
 		routerConfig.routerConfigDelegate?.handleNeedLoginForRequest()
 	}
 
-	func addExtraHeaders(request: inout URLRequest) {
+	func addExtraHeaders(request: inout URLRequest, isRefresh: Bool) {
 		if let extraHeaders = routerConfig.extraHeaders {
 			for (key, value) in extraHeaders {
 				request.setValue(value, forHTTPHeaderField: key)
 			}
 		}
+		let token = isRefresh ? routerConfig.routerConfigDelegate?.refreshToken() : routerConfig.routerConfigDelegate?.accessToken()
+		request.setValue("Bearer \(token ?? "")", forHTTPHeaderField: "Authorization")
 	}
 
 	func isRequestFailed(_ statusCode: Int) -> Bool {

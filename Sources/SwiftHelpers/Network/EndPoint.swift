@@ -13,11 +13,6 @@ public protocol EndPoint {
     var path: String { get }
     var httpMethod: HTTPMethod { get }
     var requestType: RequestType { get }
-}
-
-extension EndPoint {
-	var needLogin: Bool {
-		false
-	}
+	var needLogin: Bool { get }
 }
 

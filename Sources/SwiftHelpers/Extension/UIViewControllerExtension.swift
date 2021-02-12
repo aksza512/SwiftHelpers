@@ -18,6 +18,7 @@ public extension UIViewController {
 		toastLabel.layer.cornerRadius = 8
 		toastLabel.backgroundColor = toastBackground
 		toastLabel.clipsToBounds  =  true
+		toastLabel.numberOfLines = 0
 		let toastWidth: CGFloat = toastLabel.intrinsicContentSize.width + 24
 		let toastHeight: CGFloat = 44
 		toastLabel.frame = CGRect(x: self.view.frame.width / 2 - (toastWidth / 2), y: self.view.frame.height - (toastHeight * 3), width: toastWidth, height: toastHeight)
@@ -68,6 +69,28 @@ public extension UIViewController {
 		   return self
 	   }
 	}
+
+	func add(_ child: UIViewController, frame: CGRect? = nil, containerView: UIView? = nil) {
+		 addChild(child)
+		 if let frame = frame {
+			 child.view.frame = frame
+		 }
+		 view.addSubview(child.view)
+		if let containerView = containerView {
+			child.view.translatesAutoresizingMaskIntoConstraints = false
+			child.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+			child.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
+			child.view.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+			child.view.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+		}
+		 child.didMove(toParent: self)
+	 }
+
+	 func remove() {
+		 willMove(toParent: nil)
+		 view.removeFromSuperview()
+		 removeFromParent()
+	 }
 }
 
 #if DEBUG
