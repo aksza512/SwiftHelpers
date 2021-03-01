@@ -26,7 +26,7 @@ public protocol RouterConfigDelegate: class {
 	func refreshToken() -> String?
 }
 
-open class RouterConfig {
+open class RouterConfig: NSObject {
 	open weak var routerConfigDelegate: RouterConfigDelegate?
 	open var extraHeaders: [String: String]?
 	open var refreshTokenCompletions = [RefreshTokenCompletionBlock]()
@@ -39,6 +39,6 @@ open class RouterConfig {
 		refreshTokenCompletions.removeAll()
 	}
 
-	public init() {
+	public override init() {
 	}
 }

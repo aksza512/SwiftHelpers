@@ -32,3 +32,9 @@ public extension CaseIterableDefaultsLast {
 		self = try Self(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? Self.allCases.last!
 	}
 }
+
+public extension CaseIterable where Self: Equatable {
+	var index: Self.AllCases.Index? {
+		return Self.allCases.firstIndex { self == $0 }
+	}
+}

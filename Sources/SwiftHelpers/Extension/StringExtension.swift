@@ -31,3 +31,49 @@ public extension String {
 		return range(of: string) != nil
 	}
 }
+
+public extension NSMutableAttributedString {
+
+	func bold(_ value: String, fontSize: CGFloat) -> NSMutableAttributedString {
+
+		let attributes:[NSAttributedString.Key : Any] = [
+			.font : UIFont.boldSystemFont(ofSize: fontSize),
+		]
+
+		self.append(NSAttributedString(string: value, attributes:attributes))
+		return self
+	}
+
+	func bold(_ value: String, fontSize: CGFloat, color: UIColor?) -> NSMutableAttributedString {
+
+		let attributes:[NSAttributedString.Key : Any] = [
+			.font : UIFont.boldSystemFont(ofSize: fontSize),
+			.foregroundColor : color ?? .black
+		]
+
+		self.append(NSAttributedString(string: value, attributes:attributes))
+		return self
+	}
+
+	func normal(_ value: String, fontSize: CGFloat) -> NSMutableAttributedString {
+
+		let attributes:[NSAttributedString.Key : Any] = [
+			.font : UIFont.systemFont(ofSize: fontSize),
+		]
+
+		self.append(NSAttributedString(string: value, attributes:attributes))
+		return self
+	}
+
+	func underlined(_ value: String, fontSize: CGFloat) -> NSMutableAttributedString {
+
+		let attributes:[NSAttributedString.Key : Any] = [
+			.font :  UIFont.systemFont(ofSize: fontSize),
+			.underlineStyle : NSUnderlineStyle.single.rawValue
+
+		]
+
+		self.append(NSAttributedString(string: value, attributes:attributes))
+		return self
+	}
+}
