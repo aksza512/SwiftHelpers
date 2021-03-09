@@ -19,9 +19,12 @@ open class BTabBarController: UITabBarController {
 		}
 	}
 
-	static public func create(_ viewControllers: [UIViewController]) -> BTabBarController {
+    static public func create(_ viewControllers: [UIViewController], tintColor: UIColor? = nil) -> BTabBarController {
 		let vc = BTabBarController()
 		vc.viewControllers = viewControllers
+        if let tintColor = tintColor {
+            vc.tabBar.tintColor = tintColor
+        }
 		return vc
 	}
 
