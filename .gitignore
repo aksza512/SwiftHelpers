@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 builds/
+.build/
 # fastlane specific
 fastlane/notes.txt
 fastlane/report.xml
