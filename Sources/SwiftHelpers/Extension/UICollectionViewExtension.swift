@@ -12,5 +12,5 @@ public extension UICollectionView {
 		for identifier in identifiers {
 			register(UINib.init(nibName: identifier, bundle: Bundle.main), forCellWithReuseIdentifier: identifier)
 		}
-	}
+	}	
 }

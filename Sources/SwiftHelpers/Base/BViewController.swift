@@ -9,10 +9,15 @@ import UIKit
 
 open class BViewController: UIViewController {
     @IBOutlet public weak var tableView: UITableView!
+	// Loading View
 	@IBOutlet public weak var loadingView: LoadingView!
 	var tmpLoadingView: LoadingView?
+	// Empty View
 	@IBOutlet public weak var emptyView: EmptyView!
 	var tmpEmptyView: EmptyView?
+	// Pull to refresh
+	var refreshControl: UIRefreshControl?
+	var refreshControlActionCompletion: (() -> Void)?
 
     @IBAction public func closeButtonPressed(_ button: UIButton) {
         dismiss(animated: true, completion: nil)
@@ -36,8 +41,10 @@ open class BViewController: UIViewController {
 		if loadingView != nil {
 			show ? loadingView.fadeIn() : loadingView.fadeOut()
 		} else if let tmpLoadingView = tmpLoadingView {
-			tmpLoadingView.fadeOut()
-			self.tmpLoadingView = nil
+			tmpLoadingView.fadeOut {
+				self.tmpLoadingView?.removeFromSuperview()
+				self.tmpLoadingView = nil
+			}
 		} else if show {
 			tmpLoadingView = LoadingView(frame: .zero)
 			tmpLoadingView?.hide()
@@ -57,7 +64,10 @@ open class BViewController: UIViewController {
 			emptyView.config(title: title, subtitle: subtitle, image: image, buttonTitle: buttonTitle, actionButtonPressed: actionButtonPressed, pullToRefresh: pullToRefresh)
 		} else if let tmpEmptyView = tmpEmptyView, !show {
 			tmpEmptyView.fadeOut()
-			self.tmpEmptyView = nil
+			tmpEmptyView.fadeOut {
+				self.tmpEmptyView?.removeFromSuperview()
+				self.tmpEmptyView = nil
+			}
 		} else if tmpEmptyView == nil && show {
 			tmpEmptyView = EmptyView(frame: .zero)
 			tmpEmptyView?.hide()
@@ -71,4 +81,20 @@ open class BViewController: UIViewController {
 			tmpEmptyView?.fadeIn()
 		}
 	}
+	
+	open func addPullToRefresh(_ scrollView: UIScrollView, _ action: @escaping () -> Void) {
+		refreshControl = UIRefreshControl()
+		refreshControlActionCompletion = action
+		refreshControl?.addTarget(self, action: #selector(pulledRefreshControl(_:)), for: UIControl.Event.valueChanged)
+		scrollView.refreshControl = refreshControl
+	}
+	
+	open func endPullToRefresh() {
+		refreshControl?.endRefreshing()
+	}
+	
+	@objc func pulledRefreshControl(_ sender: Any) {
+		if let completion = refreshControlActionCompletion { completion() }
+	}
+
 }

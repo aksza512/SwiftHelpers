@@ -94,7 +94,15 @@ public extension UIView {
 			self.alpha = 0.0
 		}
 	}
-	
+
+	func fadeOut(_ completion: (() -> Void)? = nil ) {
+		UIView.animate(withDuration: defaultAnimationDuration) {
+			self.alpha = 0.0
+		} completion: { (success) in
+			if let completion = completion { completion() }
+		}
+	}
+
 	func showEmptyView(_ emptyView: EmptyView) {
 		if !self.subviews.contains(emptyView) {
 			emptyView.tag = emptyViewTag
