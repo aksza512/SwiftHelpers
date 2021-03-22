@@ -47,6 +47,9 @@ open class BViewController: UIViewController {
 			}
 		} else if show {
 			tmpLoadingView = LoadingView(frame: .zero)
+			if let bgrColor = UIColor(named: "loadingBackgroundColor") {
+				tmpLoadingView?.backgroundColor = bgrColor
+			}
 			tmpLoadingView?.hide()
 			tmpLoadingView?.translatesAutoresizingMaskIntoConstraints = false
 			self.view.addSubview(tmpLoadingView!)

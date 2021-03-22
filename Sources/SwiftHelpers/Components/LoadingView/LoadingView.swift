@@ -16,7 +16,6 @@ open class LoadingView: BView {
 	}
 
 	func createContentView() {
-		self.backgroundColor = .white
 		if #available(iOS 13.0, *) {
 			let indicator = UIActivityIndicatorView(style: .medium)
 			indicator.translatesAutoresizingMaskIntoConstraints = false
