@@ -92,6 +92,9 @@ public class Router<T: EndPoint> {
 						self.handleLogout()
 						completion(.failure(.tokenRefreshFailed))
 					} else {
+						DispatchQueue.main.async {
+							completion(.failure(.error401(data, response)))
+						}
 						self.handleAuthorizationError(data, endPoint, completion)
 					}
 					return
@@ -189,8 +192,9 @@ public class Router<T: EndPoint> {
 				request.setValue(value, forHTTPHeaderField: key)
 			}
 		}
-		let token = isRefresh ? routerConfig.routerConfigDelegate?.refreshToken() : routerConfig.routerConfigDelegate?.accessToken()
-		request.setValue("Bearer \(token ?? "")", forHTTPHeaderField: "Authorization")
+		if let token = isRefresh ? routerConfig.routerConfigDelegate?.refreshToken() : routerConfig.routerConfigDelegate?.accessToken() {
+			request.setValue("\(token)", forHTTPHeaderField: "Authorization")
+		}
 	}
 
 	func isRequestFailed(_ statusCode: Int) -> Bool {

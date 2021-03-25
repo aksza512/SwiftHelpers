@@ -36,6 +36,10 @@ open class RouterConfig: NSObject {
 		for completion in refreshTokenCompletions {
 			completion()
 		}
+		removeAllCompletions()
+	}
+	
+	open func removeAllCompletions() {
 		refreshTokenCompletions.removeAll()
 	}
 
