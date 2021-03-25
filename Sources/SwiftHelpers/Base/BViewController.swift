@@ -57,7 +57,7 @@ open class BViewController: UIViewController {
 			tmpLoadingView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
 			tmpLoadingView?.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
 			tmpLoadingView?.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
-			tmpLoadingView?.fadeIn()
+			tmpLoadingView?.show()
 		}
 	}
 	
