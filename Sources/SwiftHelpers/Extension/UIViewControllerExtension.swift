@@ -8,25 +8,47 @@
 import UIKit
 
 public extension UIViewController {
-	func showToast(message : String, font: UIFont = UIFont.systemFont(ofSize: 17.0, weight: .regular), toastColor: UIColor = .white, toastBackground: UIColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.85)) {
+	func showToast(message : String, font: UIFont = UIFont.systemFont(ofSize: 17.0, weight: .regular), toastColor: UIColor = .white, toastBackground: UIColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)) {
 		let toastLabel = UILabel()
 		toastLabel.textColor = toastColor
 		toastLabel.font = font
 		toastLabel.textAlignment = .center
 		toastLabel.text = message
-		toastLabel.alpha = 0.0
-		toastLabel.layer.cornerRadius = 8
-		toastLabel.backgroundColor = toastBackground
 		toastLabel.clipsToBounds  =  true
 		toastLabel.numberOfLines = 0
-		let toastWidth: CGFloat = toastLabel.intrinsicContentSize.width + 24
-		let toastHeight: CGFloat = 44
-		toastLabel.frame = CGRect(x: self.view.frame.width / 2 - (toastWidth / 2), y: self.view.frame.height - (toastHeight * 3), width: toastWidth, height: toastHeight)
-		self.view.addSubview(toastLabel)
-		UIView.animate(withDuration: 1.5, delay: 0.1, options: .autoreverse, animations: {
-			toastLabel.alpha = 1.2
+		
+		let bgrView = UIView()
+		bgrView.cornerRadius = 10
+		bgrView.backgroundColor = toastBackground
+		bgrView.clipsToBounds  =  true
+		bgrView.alpha = 0.0
+		bgrView.translatesAutoresizingMaskIntoConstraints = false
+		toastLabel.translatesAutoresizingMaskIntoConstraints = false
+
+		bgrView.addSubview(toastLabel)
+		self.view.addSubview(bgrView)
+
+		toastLabel.sizeToFit()
+		let toastWidth: CGFloat = toastLabel.width
+		let labelWidth = min(toastWidth, self.view.frame.width - 50.0)
+
+		toastLabel.leftAnchor.constraint(equalTo: bgrView.leftAnchor, constant: 10).isActive = true
+		toastLabel.rightAnchor.constraint(equalTo: bgrView.rightAnchor, constant: -10).isActive = true
+		toastLabel.bottomAnchor.constraint(equalTo: bgrView.bottomAnchor, constant: -10).isActive = true
+		toastLabel.topAnchor.constraint(equalTo: bgrView.topAnchor, constant: 10).isActive = true
+
+		bgrView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		bgrView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 44.0).isActive = true
+		bgrView.widthAnchor.constraint(equalToConstant: labelWidth + 30.0).isActive = true
+		
+		UIView.animate(withDuration: 0.8, delay: 0.1, options: .curveEaseIn, animations: {
+			bgrView.alpha = 4.0
 		}) { _ in
-			toastLabel.removeFromSuperview()
+			UIView.animate(withDuration: 0.8, delay: 3.0, options: .curveEaseOut, animations: {
+				bgrView.alpha = 0.0
+			}) { _ in
+				bgrView.removeFromSuperview()
+			}
 		}
 	}
 
