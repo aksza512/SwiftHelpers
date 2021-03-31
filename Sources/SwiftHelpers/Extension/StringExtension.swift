@@ -44,6 +44,16 @@ public extension NSMutableAttributedString {
 		return self
 	}
 
+	func font(_ value: String, font: UIFont) -> NSMutableAttributedString {
+
+		let attributes:[NSAttributedString.Key : Any] = [
+			.font : font,
+		]
+
+		self.append(NSAttributedString(string: value, attributes:attributes))
+		return self
+	}
+
 	func bold(_ value: String, fontSize: CGFloat, color: UIColor?) -> NSMutableAttributedString {
 
 		let attributes:[NSAttributedString.Key : Any] = [
