@@ -153,6 +153,24 @@ public extension UIView {
 			frame.origin.x + self.width
 		}
     }
+	
+	var bottom: CGFloat {
+		set (bottom) {
+			frame = CGRect(x: frame.origin.x, y: bottom - frame.size.height, width: frame.size.width, height: frame.size.height)
+		}
+		get {
+			frame.origin.y + frame.size.height
+		}
+	}
+
+	var top: CGFloat {
+		set (top) {
+			frame = CGRect(x: frame.origin.x, y: top, width: frame.size.width, height: frame.size.height)
+		}
+		get {
+			frame.origin.y
+		}
+	}
 
     var width: CGFloat {
         set (width) {
@@ -183,10 +201,12 @@ public extension UIView {
 
     var centerY: CGFloat {
         set (centerY) {
-			frame = CGRect(x: frame.origin.x, y: centerY - (height / 2), width: frame.size.width, height: frame.size.height)
+			var center = self.center
+			center.y = centerY
+			self.center = center
         }
         get {
-			height / 2
+			self.center.y
 		}
     }
 
@@ -209,6 +229,20 @@ public extension UIView {
 		UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.2, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
 			self.transform = CGAffineTransform.identity
 		}, completion: nil)
+	}
+	
+	func shake(duration: TimeInterval, delay: TimeInterval, delta: CGFloat, _ completion: (() -> Void)?) {
+		CATransaction.begin()
+		CATransaction.setCompletionBlock {
+			if let completion = completion { completion() }
+		}
+		let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+		animation.timingFunction = CAMediaTimingFunction(name: .linear)
+		animation.duration = duration
+		animation.beginTime = CACurrentMediaTime() + delay
+		animation.values = [ (0), (-delta), (delta), (-delta), (delta), (-(delta / 2.0)), ((delta / 2.0)), (-(delta / 4.0)), ((delta / 4.0)), 0 ]
+		self.layer.add(animation, forKey: "shakeAnimation")
+		CATransaction.commit()
 	}
 
 	func removeAllSubviews() {
@@ -278,5 +312,32 @@ public extension UIView {
 		return renderer.image { rendererContext in
 			layer.render(in: rendererContext.cgContext)
 		}
+	}
+	
+	func addSubview(top constraints: CGFloat, right: CGFloat, bottom: CGFloat, left: CGFloat, view: UIView) {
+		addSubview(view)
+		view.topAnchor.constraint(equalTo: self.topAnchor, constant: top).isActive = true
+		view.rightAnchor.constraint(equalTo: self.rightAnchor, constant: right).isActive = true
+		view.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: bottom).isActive = true
+		view.leftAnchor.constraint(equalTo: self.leftAnchor, constant: left).isActive = true
+	}
+	
+	func setAnchorPoint(_ point: CGPoint) {
+		var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
+		var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
+
+		newPoint = newPoint.applying(transform)
+		oldPoint = oldPoint.applying(transform)
+
+		var position = layer.position
+
+		position.x -= oldPoint.x
+		position.x += newPoint.x
+
+		position.y -= oldPoint.y
+		position.y += newPoint.y
+
+		layer.position = position
+		layer.anchorPoint = point
 	}
 }

@@ -17,4 +17,9 @@ public extension UITableView {
     func dequeueCell(_ cellName: String, indexPath: IndexPath) -> UITableViewCell? {
         dequeueReusableCell(withIdentifier: cellName, for: indexPath)
     }
+	
+	func refreshRowHeightsAnimated() {
+		beginUpdates()
+		endUpdates()
+	}
 }

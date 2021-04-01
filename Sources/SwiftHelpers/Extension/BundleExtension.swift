@@ -5,7 +5,7 @@
 //  Created by Márk József Alexa on 2020. 09. 22..
 //
 
-import Foundation
+import UIKit
 
 public extension Bundle {
 	func decode<T: Decodable>(_ type: T.Type, from file: String, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) -> T {
@@ -31,5 +31,9 @@ public extension Bundle {
 		} catch {
 			fatalError("Failed to decode \(file) from bundle: \(error.localizedDescription)")
 		}
+	}
+	
+	func loadFirst(_ fromNib: String) -> Any? {
+		return loadNibNamed(fromNib, owner: nil, options: nil)?.first
 	}
 }
