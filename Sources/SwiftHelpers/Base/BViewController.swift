@@ -61,6 +61,16 @@ open class BViewController: UIViewController {
 		}
 	}
 	
+	open func hideEmpty() {
+		if let tmpEmptyView = tmpEmptyView {
+			tmpEmptyView.fadeOut()
+			tmpEmptyView.fadeOut {
+				self.tmpEmptyView?.removeFromSuperview()
+				self.tmpEmptyView = nil
+			}
+		}
+	}
+	
 	open func showEmpty(show: Bool, title: String?, subtitle: String?, image: UIImage?, buttonTitle: String?, actionButtonPressed: (() -> Void)?, pullToRefresh: (() -> Void)?) {
 		if emptyView != nil {
 			show ? emptyView.fadeIn() : emptyView.fadeOut()
