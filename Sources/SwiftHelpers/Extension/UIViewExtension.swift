@@ -316,6 +316,7 @@ public extension UIView {
 	
 	func addSubview(top constraints: CGFloat, right: CGFloat, bottom: CGFloat, left: CGFloat, view: UIView) {
 		addSubview(view)
+		view.translatesAutoresizingMaskIntoConstraints = false
 		view.topAnchor.constraint(equalTo: self.topAnchor, constant: top).isActive = true
 		view.rightAnchor.constraint(equalTo: self.rightAnchor, constant: right).isActive = true
 		view.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: bottom).isActive = true
