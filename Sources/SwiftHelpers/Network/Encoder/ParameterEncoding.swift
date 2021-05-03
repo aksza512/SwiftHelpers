@@ -14,12 +14,17 @@ public protocol ParameterEncoder {
     func encode(urlRequest: inout URLRequest, with parameters: Parameters) throws
 }
 
+public protocol BinaryEncoder {
+	func encode(urlRequest: inout URLRequest, with parameters: Parameters, with dataArray: [(String, Data)]) throws
+}
+
 public enum ParameterEncoding {
     case urlEncoding
     case jsonEncoding
     case urlAndJsonEncoding
+	case multipartEncoding
 	
-    public func encode(urlRequest: inout URLRequest, bodyParameters: Parameters?, urlParameters: Parameters?) throws {
+	public func encode(urlRequest: inout URLRequest, bodyParameters: Parameters?, urlParameters: Parameters?, dataArray: [(String, Data)]? = []) throws {
         do {
             switch self {
             case .urlEncoding:
@@ -32,6 +37,9 @@ public enum ParameterEncoding {
                 guard let bodyParameters = bodyParameters, let urlParameters = urlParameters else { return }
                 try URLParameterEncoder().encode(urlRequest: &urlRequest, with: urlParameters)
                 try JSONParameterEncoder().encode(urlRequest: &urlRequest, with: bodyParameters)
+			case .multipartEncoding:
+				guard let dataArray = dataArray, let bodyParameters = bodyParameters else { return }
+				try MULTIPARTParameterEncoder().encode(urlRequest: &urlRequest, with: bodyParameters, with: dataArray)
             }
         } catch {
             throw error

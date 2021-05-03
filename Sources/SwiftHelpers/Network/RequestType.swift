@@ -10,5 +10,5 @@ import Foundation
 
 public enum RequestType {
     case request
-    case requestParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding, urlParameters: Parameters?)
+    case requestParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding, urlParameters: Parameters?, dataArray: [(String, Data)]? = [])
 }

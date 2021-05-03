@@ -17,7 +17,7 @@ public struct JSONParameterEncoder: ParameterEncoder {
                 urlRequest.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
                 urlRequest.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Accept")
             }
-        }catch {
+        } catch {
             throw NetworkError.encodingFailed
         }
     }
