@@ -7,5 +7,9 @@
 
 import Foundation
 
-public extension Dictionary {
+public extension Dictionary where Key == String, Value: Any {
+	mutating func safeAdd(_ value: Value?, key: Key) {
+		guard let value = value else { return }
+		self[key] = value
+	}
 }

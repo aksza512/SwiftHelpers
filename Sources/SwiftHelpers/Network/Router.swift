@@ -110,7 +110,7 @@ public class Router<T: EndPoint> {
 					return
 				}
 				// MIME error
-				guard let mime = response?.mimeType, mime == "application/json" else {
+				guard let mime = response?.mimeType, mime == "application/json" || mime == "text/plain" else {
 					self.logger.error("❤️ RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], WRONG MIME TYPE, error: (\(error?.localizedDescription ?? ""))")
 					return
 				}
