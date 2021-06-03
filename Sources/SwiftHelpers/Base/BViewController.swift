@@ -71,7 +71,7 @@ open class BViewController: UIViewController {
 		}
 	}
 	
-	open func showEmpty(show: Bool, title: String?, subtitle: String?, image: UIImage?, buttonTitle: String?, actionButtonPressed: (() -> Void)?, pullToRefresh: (() -> Void)?) {
+	open func showEmpty(show: Bool, title: String?, subtitle: String?, image: UIImage?, buttonTitle: String?, actionButtonPressed: (() -> Void)?, pullToRefresh: (() -> Void)?, backgroundColor: UIColor = .groupTableViewBackground) {
 		if emptyView != nil {
 			show ? emptyView.fadeIn() : emptyView.fadeOut()
 			emptyView.config(title: title, subtitle: subtitle, image: image, buttonTitle: buttonTitle, actionButtonPressed: actionButtonPressed, pullToRefresh: pullToRefresh)
@@ -83,6 +83,7 @@ open class BViewController: UIViewController {
 			}
 		} else if tmpEmptyView == nil && show {
 			tmpEmptyView = EmptyView(frame: .zero)
+			tmpEmptyView?.backgroundColor = backgroundColor
 			tmpEmptyView?.hide()
 			tmpEmptyView?.translatesAutoresizingMaskIntoConstraints = false
 			self.view.addSubview(tmpEmptyView!)
