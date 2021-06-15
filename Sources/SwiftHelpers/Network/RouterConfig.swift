@@ -10,7 +10,7 @@ import Foundation
 public typealias RefreshTokenCompletionBlock = () -> Void
 public typealias NeedLoginForRequestCompletionBlock = () -> Void
 
-public protocol RouterConfigDelegate: class {
+public protocol RouterConfigDelegate: AnyObject {
 	// Authorization error 401
 	func handleAuthorizationError(data: Data?)
 	// Authorization error 403

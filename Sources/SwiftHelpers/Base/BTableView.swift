@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc public protocol BTableViewDelegate: class {
+@objc public protocol BTableViewDelegate: AnyObject {
 	func didPullToRefresh()
 }
 
