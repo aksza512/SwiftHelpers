@@ -92,12 +92,21 @@ public extension UIViewController {
 	   }
 	}
 
-	func add(_ child: UIViewController, frame: CGRect? = nil, containerView: UIView? = nil) {
+	func add(_ child: UIViewController?, frame: CGRect? = nil, containerView: UIView? = nil, animate: Bool = false) {
+		guard let child = child else { return }
 		 addChild(child)
 		 if let frame = frame {
 			 child.view.frame = frame
 		 }
 		 view.addSubview(child.view)
+		if animate {
+			child.view.hide()
+			UIView.animate(withDuration: 0.3, delay: 0.1, options: .curveEaseInOut) {
+				child.view.alpha = 1.0
+			} completion: { success in
+				
+			}
+		}
 		if let containerView = containerView {
 			child.view.translatesAutoresizingMaskIntoConstraints = false
 			child.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
@@ -105,7 +114,7 @@ public extension UIViewController {
 			child.view.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
 			child.view.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
 		}
-		 child.didMove(toParent: self)
+		child.didMove(toParent: self)
 	 }
 
 	 func remove() {
@@ -113,6 +122,18 @@ public extension UIViewController {
 		 view.removeFromSuperview()
 		 removeFromParent()
 	 }
+
+	func remove(_ completion: (() -> Void)? = nil) {
+		UIView.animate(withDuration: 0.3, delay: 0.1, options: .curveEaseInOut) {
+			self.view.alpha = 0.0
+		} completion: { success in
+			self.willMove(toParent: nil)
+			self.view.removeFromSuperview()
+			self.removeFromParent()
+			completion?()
+		}
+
+	}
 }
 
 #if DEBUG

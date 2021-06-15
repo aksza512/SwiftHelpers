@@ -89,6 +89,14 @@ public extension UIView {
 		}
 	}
 
+	func fadeIn(_ completion: (() -> Void)? = nil ) {
+		UIView.animate(withDuration: defaultAnimationDuration) {
+			self.alpha = 1.0
+		} completion: { (success) in
+			if let completion = completion { completion() }
+		}
+	}
+
 	func fadeOut() {
 		UIView.animate(withDuration: defaultAnimationDuration) {
 			self.alpha = 0.0
