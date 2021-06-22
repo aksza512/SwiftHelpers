@@ -185,8 +185,9 @@ public extension UIButton {
 	func loadingIndicator(_ show: Bool) {
 		let tag = 808404
 		if show {
+			self.titleLabel?.hide()
 			self.isEnabled = false
-			self.alpha = 0.5
+			self.alpha = 0.7
 			let indicator = UIActivityIndicatorView()
 			let buttonHeight = self.bounds.size.height
 			let buttonWidth = self.bounds.size.width
@@ -195,6 +196,7 @@ public extension UIButton {
 			self.addSubview(indicator)
 			indicator.startAnimating()
 		} else {
+			self.titleLabel?.show()
 			self.isEnabled = true
 			self.alpha = 1.0
 			if let indicator = self.viewWithTag(tag) as? UIActivityIndicatorView {
