@@ -134,7 +134,7 @@ open class BViewController: UIViewController {
 		}
 	}
 
-	func didScrollNextPage() {
+	open func didScrollNextPage() {
 
 	}
 }
