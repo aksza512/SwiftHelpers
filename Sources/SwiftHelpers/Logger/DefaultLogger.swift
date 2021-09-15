@@ -5,7 +5,7 @@
 //  Created by Márk József Alexa on 2020. 09. 24..
 //
 
-open protocol LoggerProtocol {
+public protocol LoggerProtocol {
 	func setupLogger()
 	func debug(_ message: String)
 	func info(_ message: String)
