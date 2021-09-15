@@ -115,6 +115,7 @@ open class BViewController: UIViewController {
 
 	open func showTableViewBottomActivityIndicator(_ show: Bool) {
 		if show {
+			if tableViewBottomActivityIndicator != nil { return }
 			if #available(iOS 13.0, *) {
 				tableViewBottomActivityIndicator = UIActivityIndicatorView(style: (UITraitCollection.current.userInterfaceStyle == .dark) ? .white : .gray )
 			} else {
