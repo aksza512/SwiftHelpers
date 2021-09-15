@@ -13,7 +13,7 @@ public protocol LoggerProtocol {
 	func error(_ message: String)
 }
 
-open class DefaultLogger: LoggerProtocol {
+public class DefaultTmpLogger: LoggerProtocol {
 	public func setupLogger() {
 	}
 
