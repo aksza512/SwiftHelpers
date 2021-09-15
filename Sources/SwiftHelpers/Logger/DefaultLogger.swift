@@ -5,7 +5,7 @@
 //  Created by Márk József Alexa on 2020. 09. 24..
 //
 
-public protocol LoggerProtocol {
+open protocol LoggerProtocol {
 	func setupLogger()
 	func debug(_ message: String)
 	func info(_ message: String)
@@ -13,7 +13,7 @@ public protocol LoggerProtocol {
 	func error(_ message: String)
 }
 
-public class DefaultLogger: LoggerProtocol {
+open class DefaultLogger: LoggerProtocol {
 	public func setupLogger() {
 	}
 
