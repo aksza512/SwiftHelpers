@@ -140,7 +140,7 @@ open class BViewController: UIViewController {
 }
 
 extension BViewController: UIScrollViewDelegate {	
-	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+	open func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		if scrollView.contentOffset.y > (scrollView.contentSize.height - scrollView.height) && (scrollView.contentSize.height > scrollView.height) {
 			self.didScrollNextPage()
 		}
