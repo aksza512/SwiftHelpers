@@ -133,4 +133,16 @@ open class BViewController: UIViewController {
 			tableViewBottomActivityIndicator = nil
 		}
 	}
+
+	func didScrollNextPage() {
+
+	}
+}
+
+extension BViewController: UIScrollViewDelegate {	
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		if scrollView.contentOffset.y > (scrollView.contentSize.height - scrollView.height) && (scrollView.contentSize.height > scrollView.height) {
+			self.didScrollNextPage()
+		}
+	}
 }
