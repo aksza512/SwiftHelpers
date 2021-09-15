@@ -18,6 +18,8 @@ open class BViewController: UIViewController {
 	// Pull to refresh
 	var refreshControl: UIRefreshControl?
 	var refreshControlActionCompletion: (() -> Void)?
+	// UITableView Bottom loading indicator
+	var tableViewBottomActivityIndicator: UIActivityIndicatorView?
 
     @IBAction public func closeButtonPressed(_ button: UIButton) {
         dismiss(animated: true, completion: nil)
@@ -111,4 +113,23 @@ open class BViewController: UIViewController {
 		if let completion = refreshControlActionCompletion { completion() }
 	}
 
+	open func showTableViewBottomActivityIndicator(_ show: Bool) {
+		if show {
+			if #available(iOS 13.0, *) {
+				tableViewBottomActivityIndicator = UIActivityIndicatorView(style: (UITraitCollection.current.userInterfaceStyle == .dark) ? .white : .gray )
+			} else {
+				tableViewBottomActivityIndicator = UIActivityIndicatorView(style: .gray)
+			}
+			tableViewBottomActivityIndicator?.startAnimating()
+			tableViewBottomActivityIndicator?.frame = .init(origin: .zero, size: .init(width: tableView.width, height: 44))
+			tableView.layoutIfNeeded()
+			if tableView.contentSize.height > tableView.height {
+				tableView.tableFooterView = tableViewBottomActivityIndicator
+			}
+		} else {
+			tableViewBottomActivityIndicator?.stopAnimating()
+			tableViewBottomActivityIndicator?.removeFromSuperview()
+			tableViewBottomActivityIndicator = nil
+		}
+	}
 }
