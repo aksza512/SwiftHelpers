@@ -14,3 +14,14 @@ public extension UICollectionView {
 		}
 	}	
 }
+
+@available(iOS 13.0, *)
+public extension UICollectionViewDiffableDataSource {
+	func reloadData(snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
+		if #available(iOS 15.0, *) {
+			self.applySnapshotUsingReloadData(snapshot, completion: completion)
+		} else {
+			self.apply(snapshot, animatingDifferences: false, completion: completion)
+		}
+	}
+}
