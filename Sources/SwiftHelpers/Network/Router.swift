@@ -8,14 +8,6 @@
 
 import Foundation
 
-//extension RouterConfig: URLSessionTaskDelegate {
-//
-//	public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-//
-//	}
-//
-//}
-
 public class Router<T: EndPoint> {
 	let session = URLSession.shared
 	let routerConfig: RouterConfig
