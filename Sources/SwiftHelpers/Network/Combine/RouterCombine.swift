@@ -89,8 +89,8 @@ public class RouterCombine<T: EndPoint> {
 		}
 	}
 
-	public func publisher(_ endPoint: T) -> AnyPublisher<Data, Error> {
-		if !endPoint.needLogin {
+	public func publisher(_ endPoint: T, withRefresh: Bool = false) -> AnyPublisher<Data, Error> {
+		if !endPoint.needLogin || !withRefresh {
 			return publisherWithoutAuth(endPoint)
 		} else if let authenticator = authenticator {
 			return publisherWithAuth(endPoint, authenticator: authenticator)
@@ -120,7 +120,7 @@ public class RouterCombine<T: EndPoint> {
 	public func publisherWithAuth(_ endPoint: T, authenticator: AuthenticatorProtocol) -> AnyPublisher<Data, Error> {
 		return authenticator.refreshTokenPublisher()
 			.flatMap({ token in
-				self.publisher(endPoint)
+				self.publisher(endPoint, withRefresh: false)
 			})
 			.tryCatch({ error -> AnyPublisher<Data, Error> in
 				guard let serviceError = error as? AuthenticationError, serviceError == .invalidToken else {
@@ -128,7 +128,7 @@ public class RouterCombine<T: EndPoint> {
 				}
 				return authenticator.refreshTokenPublisher()
 					.flatMap({ token in
-						self.publisher(endPoint)
+						self.publisher(endPoint, withRefresh: false)
 					})
 					.eraseToAnyPublisher()
 			})
