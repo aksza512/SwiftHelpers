@@ -109,7 +109,6 @@ public class Router<T: EndPoint> {
 				// PARSE json
 				do {
 					if let data = data {
-						print(data.prettyPrintedJSONString)
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
 							self.logger.info("💜 RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")

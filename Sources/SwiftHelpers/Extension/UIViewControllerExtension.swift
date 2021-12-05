@@ -67,11 +67,8 @@ public extension UIViewController {
 	}
 
 	static func topMostViewController() -> UIViewController? {
-	   if #available(iOS 13.0, *) {
-		   let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-		   return keyWindow?.rootViewController?.topMostViewController()
-	   }
-	   return UIApplication.shared.keyWindow?.rootViewController?.topMostViewController()
+       let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+       return keyWindow?.rootViewController?.topMostViewController()
 	}
 
 	func topMostViewController() -> UIViewController? {

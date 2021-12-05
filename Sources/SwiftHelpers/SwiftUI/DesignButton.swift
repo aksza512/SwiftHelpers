@@ -21,7 +21,7 @@ public enum DesignButtonDefaultColor: DesignButtonColorProtocol {
         } else if isPressed {
             return .orange
         } else {
-            return .brown
+            return .black
         }
     }
 
