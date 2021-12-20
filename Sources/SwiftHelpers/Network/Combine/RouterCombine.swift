@@ -71,8 +71,9 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
                     throw error
                 }
                 return authenticator.refreshToken()
-                    .flatMap { token -> AnyPublisher<ResponseType, RequestError> in
-                        self.publisher(endPoint)
+                    .flatMap { [weak self] token -> AnyPublisher<ResponseType, RequestError> in
+                        guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
+                        return self.publisher(endPoint)
                     }
                     .eraseToAnyPublisher()
             }
@@ -82,8 +83,9 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 
         if let authenticator = authenticator, endPoint.needLogin && !authenticator.isUserLoggedIn() {
             return authenticator.promptLoginToUser()
-                .flatMap { _ in
-                    self.publisher(endPoint)
+                .flatMap { [weak self] _ -> AnyPublisher<ResponseType, RequestError> in
+                    guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
+                    return self.publisher(endPoint)
                 }
                 .eraseToAnyPublisher()
         }
