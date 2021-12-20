@@ -25,5 +25,7 @@ public extension CGFloat {
     static let xxl: CGFloat = 28
     /// 32
     static let xxxl: CGFloat = 32
+    /// 44
+    static let minTapHeight: CGFloat = 44
 
 }

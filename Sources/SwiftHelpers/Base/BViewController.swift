@@ -72,8 +72,8 @@ open class BViewController: UIViewController {
 			}
 		}
 	}
-	
-	open func showEmpty(show: Bool, title: String?, subtitle: String?, image: UIImage?, buttonTitle: String?, actionButtonPressed: (() -> Void)?, pullToRefresh: (() -> Void)?, backgroundColor: UIColor = .groupTableViewBackground) {
+
+	open func showEmpty(show: Bool, title: String?, subtitle: String?, image: UIImage?, buttonTitle: String?, actionButtonPressed: (() -> Void)?, pullToRefresh: (() -> Void)?, backgroundColor: UIColor = .white) {
 		if emptyView != nil {
 			show ? emptyView.fadeIn() : emptyView.fadeOut()
 			emptyView.config(title: title, subtitle: subtitle, image: image, buttonTitle: buttonTitle, actionButtonPressed: actionButtonPressed, pullToRefresh: pullToRefresh)
@@ -117,7 +117,7 @@ open class BViewController: UIViewController {
 		if show {
 			if tableViewBottomActivityIndicator != nil { return }
 			if #available(iOS 13.0, *) {
-				tableViewBottomActivityIndicator = UIActivityIndicatorView(style: (UITraitCollection.current.userInterfaceStyle == .dark) ? .white : .gray )
+                tableViewBottomActivityIndicator = UIActivityIndicatorView(style: (UITraitCollection.current.userInterfaceStyle == .dark) ? UIActivityIndicatorView.Style.medium : UIActivityIndicatorView.Style.medium )
 			} else {
 				tableViewBottomActivityIndicator = UIActivityIndicatorView(style: .gray)
 			}

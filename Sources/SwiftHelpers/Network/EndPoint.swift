@@ -16,3 +16,9 @@ public protocol EndPoint {
 	var needLogin: Bool { get }
 }
 
+public protocol CombineEndPoint {
+    var path: String { get }
+    var httpMethod: HTTPMethod { get }
+    var requestType: RequestType { get }
+    var needLogin: Bool { get }
+}
