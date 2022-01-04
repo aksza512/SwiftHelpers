@@ -18,8 +18,8 @@ public enum RequestError: Error {
 }
 
 public protocol AuthenticatorProtocol {
-    var token: AuthToken? { get }
-    func promptLoginToUser() -> PassthroughSubject<Bool, Never>
+    var token: AuthToken? { get set }
+    func promptLoginToUser() -> PassthroughSubject<AuthToken, Never>
     func refreshToken() -> AnyPublisher<AuthToken, RequestError>
     func isUserLoggedIn() -> Bool
 }
@@ -46,6 +46,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         addHeadersIfNeeded(request: &request, token: token ?? authenticator?.token?.accessToken)
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
             .tryMap { data, response -> ResponseType in
+                print("RESPONSE: \(endPoint.path) ---- \(String(data: data, encoding: .utf8) ?? "empty")")
                 guard let response = response as? HTTPURLResponse else { throw RequestError.requestFailed }
                 switch response.statusCode {
                 case 401:
@@ -55,37 +56,42 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
                 case let statusCode where ((statusCode < 200) || (statusCode >= 300)):
                     throw RequestError.requestFailed
                 default:
-                    break
+                    print(response.statusCode)
                 }
-                print(String(data: data, encoding: .utf8))
                 guard let decoded = try? JSONDecoder().decode(ResponseType.self, from: data) else {
                     throw RequestError.jsonDecodeFailed
                 }
                 return decoded
             }
             .mapError { error -> RequestError in
-                error as? RequestError ?? .requestFailed
+                return error as? RequestError ?? .requestFailed
             }
             .tryCatch { error -> AnyPublisher<ResponseType, RequestError> in
+                print("tryCatchERROR: \(endPoint.path) \(error)")
                 guard error == RequestError.unauthorized, let authenticator = self.authenticator else {
                     throw error
                 }
                 return authenticator.refreshToken()
                     .flatMap { [weak self] token -> AnyPublisher<ResponseType, RequestError> in
                         guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
-                        return self.publisher(endPoint)
+                        return self.publisher(endPoint, token: token.accessToken)
                     }
                     .eraseToAnyPublisher()
             }
-            .retry(3)
-            .mapError { $0 as! RequestError }
+            .mapError { error -> RequestError in
+                return error as? RequestError ?? .requestFailed
+            }
             .eraseToAnyPublisher()
 
         if let authenticator = authenticator, endPoint.needLogin && !authenticator.isUserLoggedIn() {
-            return authenticator.promptLoginToUser()
-                .flatMap { [weak self] _ -> AnyPublisher<ResponseType, RequestError> in
-                    guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
-                    return self.publisher(endPoint)
+            return authenticator
+                .promptLoginToUser()
+                .receive(on: RunLoop.main)
+                .flatMap { [weak self] newToken -> AnyPublisher<ResponseType, RequestError> in
+//                    guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
+//                    return self.publisher(endPoint)
+
+                    return Empty(completeImmediately: true).eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
         }
@@ -93,7 +99,8 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 	}
 
 	private func buildRequest(from endPoint: EndPoint) throws -> URLRequest {
-		var request = URLRequest(url: URL(string: "https://wodio-backend.herokuapp.com/v1")!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
+//        var request = URLRequest(url: URL(string: "https://wodio-backend.herokuapp.com/v1")!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
+        var request = URLRequest(url: URL(string: "https://wodio-backend-staging.herokuapp.com/v1")!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
 		request.httpMethod = endPoint.httpMethod.rawValue
 		do {
 			switch endPoint.requestType {
@@ -124,7 +131,8 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 			}
 		}
         if let token = token {
-            request.setValue(token, forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
+        print("------------------------------   HEADERSs: \(request.allHTTPHeaderFields)")
 	}
 }
