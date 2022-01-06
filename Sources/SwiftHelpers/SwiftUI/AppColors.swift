@@ -31,6 +31,25 @@ public protocol AppButtonColors {
     var buttonTextTertiaryDisabled: Color { get }
 }
 
+public protocol AppTextFieldColors {
+    var title: Color { get }
+    var titleImage: Color { get }
+    var trailingButton: Color { get }
+    var bgr: Color { get }
+    var bgrDisabled: Color { get }
+    var hintText: Color { get }
+    var cursorColor: Color { get }
+    var borderFocused: Color { get }
+    var border: Color { get }
+    var validated: Color { get }
+    var warning: Color { get }
+    var error: Color { get }
+    var text: Color { get }
+    var textDisabled: Color { get }
+    var deleteButton: Color { get }
+    var eye: Color { get }
+}
+
 public extension UIColor {
     convenience init(
         light lightModeColor: @escaping @autoclosure () -> UIColor,

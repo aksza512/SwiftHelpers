@@ -19,11 +19,11 @@ public struct DesignButton: View {
         public var buttonTertiaryBgrNormal: Color = .gray
         public var buttonTertiaryBgrPressed: Color = .gray
         public var buttonTertiaryBgrDisabled: Color = .gray
-        public var buttonTextPrimaryNormal: Color = Color(.label)
+        public var buttonTextPrimaryNormal: Color = Color(.white)
         public var buttonTextPrimaryDisabled: Color = Color(.secondaryLabel)
-        public var buttonTextSecondaryNormal: Color = Color(.label)
+        public var buttonTextSecondaryNormal: Color = Color(.white)
         public var buttonTextSecondaryDisabled: Color = Color(.secondaryLabel)
-        public var buttonTextTertiaryNormal: Color = Color(.label)
+        public var buttonTextTertiaryNormal: Color = Color(.systemBlue)
         public var buttonTextTertiaryDisabled: Color = Color(.secondaryLabel)
 
         public init() {
@@ -182,14 +182,8 @@ private extension DesignButton.Style {
             } else {
                 return color.buttonSecondaryBgrNormal
             }
-        case .tertiary(let color):
-            if !isEnabled {
-                return color.buttonTertiaryBgrDisabled
-            } else if isPressed {
-                return color.buttonTertiaryBgrPressed
-            } else {
-                return color.buttonTertiaryBgrNormal
-            }
+        case .tertiary(_):
+            return .clear
         }
     }
 
@@ -261,7 +255,7 @@ struct DesignButton_Previews: PreviewProvider {
                 style: .primary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .medium,
-                image: Image(systemName: "xmark"),
+                title: "Belépés",
                 action: {}
             )
                 .disabled(false)
@@ -295,6 +289,7 @@ struct DesignButton_Previews: PreviewProvider {
             )
                 .disabled(false)
         }
-        .preferredColorScheme(.dark)
+        .padding()
+        .preferredColorScheme(.light)
     }
 }

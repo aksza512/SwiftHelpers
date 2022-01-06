@@ -30,6 +30,6 @@ public extension Font {
 }
 
 public extension UIFont {
-//    static let headings4 = UIFont(name: "CircularXX-Bold", size: 20)!
+    static let body1 = UIFont.systemFont(ofSize: 16)
 }
 
