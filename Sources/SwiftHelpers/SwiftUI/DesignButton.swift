@@ -2,39 +2,34 @@
 //  StyledButton.swift
 //  DesignKit
 //
-//  Created by Alexa Márk on 2021. 12. 05..
+//  Created by Alexa Márk on 2021. 10. 20..
 //
 
 import SwiftUI
 
-public protocol DesignButtonColorProtocol {
-    func backgroundColor(isEnabled: Bool, isPressed: Bool) -> Color
-    func textColor(isEnabled: Bool, isPressed: Bool) -> Color
-}
-
-public enum DesignButtonDefaultColor: DesignButtonColorProtocol {
-    case normal
-    
-    public func backgroundColor(isEnabled: Bool, isPressed: Bool) -> Color {
-        if !isEnabled {
-            return .yellow
-        } else if isPressed {
-            return .orange
-        } else {
-            return .black
-        }
-    }
-
-    public func textColor(isEnabled: Bool, isPressed: Bool) -> Color {
-        if !isEnabled {
-            return .gray
-        } else {
-            return .red
-        }
-    }
-}
-
+@available(iOS 15.0, *)
 public struct DesignButton: View {
+    public struct DefaultDesignButtonColor: AppButtonColors {
+        public var buttonPrimaryBgrNormal: Color = Color(.systemBlue)
+        public var buttonPrimaryBgrPressed: Color = Color(.systemBlue.darker())
+        public var buttonPrimaryBgrDisabled: Color = Color(.systemGray2)
+        public var buttonSecondaryBgrNormal: Color = Color(.systemBlue.lighter())
+        public var buttonSecondaryBgrPressed: Color = Color(.systemBlue)
+        public var buttonSecondaryBgrDisabled: Color = Color(.systemGray2)
+        public var buttonTertiaryBgrNormal: Color = .gray
+        public var buttonTertiaryBgrPressed: Color = .gray
+        public var buttonTertiaryBgrDisabled: Color = .gray
+        public var buttonTextPrimaryNormal: Color = Color(.label)
+        public var buttonTextPrimaryDisabled: Color = Color(.secondaryLabel)
+        public var buttonTextSecondaryNormal: Color = Color(.label)
+        public var buttonTextSecondaryDisabled: Color = Color(.secondaryLabel)
+        public var buttonTextTertiaryNormal: Color = Color(.label)
+        public var buttonTextTertiaryDisabled: Color = Color(.secondaryLabel)
+
+        public init() {
+
+        }
+    }
 
     public enum Width {
         case fluid, fullSize
@@ -57,52 +52,63 @@ public struct DesignButton: View {
         }
     }
 
+    public enum Style {
+        case primary(_ colors: AppButtonColors)
+        case secondary(_ colors: AppButtonColors)
+        case tertiary(_ colors: AppButtonColors)
+    }
+
+    let style: Style
     let width: Width
     let size: Size
     let title: String?
     let image: Image?
-    let colors: DesignButtonColorProtocol
     let action: () -> Void
 
     public init(
+        style: Style = .primary(DefaultDesignButtonColor()),
         width: Width = .fullSize,
         size: Size = .large,
         title: String? = nil,
         image: Image? = nil,
-        colors: DesignButtonColorProtocol = DesignButtonDefaultColor.normal,
         action: @escaping () -> Void) {
-        self.colors = colors
-        self.width = width
-        self.size = size
-        self.title = title
-        self.image = image
-        self.action = action
-    }
+            self.style = style
+            self.width = width
+            self.size = size
+            self.title = title
+            self.image = image
+            self.action = action
+        }
 
     public var body: some View {
-        Button(action: action, label: {
-            HStack {
-                if width == .fullSize {
-                    Spacer()
+        Button(
+            action: {
+                action()
+            },
+            label: {
+                HStack {
+                    if width == .fullSize {
+                        Spacer()
+                    }
+                    if let image = self.image {
+                        image
+                            .resizable()
+                            .frame(width: imageSize, height: imageSize)
+                    }
+                    if let title = title, hasTitle {
+                        Text(title)
+                            .multilineTextAlignment(.center)
+                    }
+                    if width == .fullSize {
+                        Spacer()
+                    }
                 }
-                if let image = self.image {
-                    image
-                        .resizable()
-                        .frame(width: imageSize, height: imageSize)
-                }
-                if let title = title, hasTitle {
-                    Text(title)
-                }
-                if width == .fullSize {
-                    Spacer()
-                }
-            }
-            .padding(.horizontal, padding)
-            .frame(minWidth: height)
-            .frame(height: height)
-        })
-            .buttonStyle(ThemedButtonStyle(colors: colors))
-        .font(font)
+                .padding(.horizontal, padding)
+                .frame(minWidth: height)
+                .frame(height: height)
+            })
+            .buttonStyle(ThemedButtonStyle(style: style))
+            .font(font)
     }
 
     var hasTitle: Bool {
@@ -132,11 +138,11 @@ public struct DesignButton: View {
     var imageSize: CGFloat {
         switch size {
         case .small:
-            return .l
+            return .s
         case .medium:
-            return .l
+            return .m
         case .large:
-            return .xl
+            return .l
         case .giant:
             return .xxl
         }
@@ -156,25 +162,81 @@ public struct DesignButton: View {
     }
 }
 
+@available(iOS 15.0, *)
+private extension DesignButton.Style {
+    func backgroundColor(isEnabled: Bool, isPressed: Bool) -> Color {
+        switch self {
+        case .primary(let color):
+            if !isEnabled {
+                return color.buttonPrimaryBgrDisabled
+            } else if isPressed {
+                return color.buttonPrimaryBgrPressed
+            } else {
+                return color.buttonPrimaryBgrNormal
+            }
+        case .secondary(let color):
+            if !isEnabled {
+                return color.buttonSecondaryBgrDisabled
+            } else if isPressed {
+                return color.buttonSecondaryBgrPressed
+            } else {
+                return color.buttonSecondaryBgrNormal
+            }
+        case .tertiary(let color):
+            if !isEnabled {
+                return color.buttonTertiaryBgrDisabled
+            } else if isPressed {
+                return color.buttonTertiaryBgrPressed
+            } else {
+                return color.buttonTertiaryBgrNormal
+            }
+        }
+    }
+
+    func textColor(isEnabled: Bool, isPressed: Bool) -> Color {
+        switch self {
+        case .primary(let color):
+            if !isEnabled {
+                return color.buttonTextPrimaryDisabled
+            } else {
+                return color.buttonTextPrimaryNormal
+            }
+        case .secondary(let color):
+            if !isEnabled {
+                return color.buttonTextSecondaryDisabled
+            } else {
+                return color.buttonTextSecondaryNormal
+            }
+        case .tertiary(let color):
+            if !isEnabled {
+                return color.buttonTextTertiaryDisabled
+            } else {
+                return color.buttonTextTertiaryNormal
+            }
+        }
+    }
+}
+
+@available(iOS 15.0, *)
 private struct ThemedButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
-    private let colors: DesignButtonColorProtocol
-    
-    init(colors: DesignButtonColorProtocol) {
-        self.colors = colors
+    private let style: DesignButton.Style
+
+    init(style: DesignButton.Style) {
+        self.style = style
     }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(
                 Capsule().fill(
-                    colors.backgroundColor(
+                    style.backgroundColor(
                         isEnabled: isEnabled,
                         isPressed: configuration.isPressed)
                 )
             )
             .foregroundColor(
-                colors.textColor(
+                style.textColor(
                     isEnabled: isEnabled,
                     isPressed: configuration.isPressed
                 )
@@ -182,77 +244,57 @@ private struct ThemedButtonStyle: ButtonStyle {
     }
 }
 
+@available(iOS 15.0, *)
 struct DesignButton_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             DesignButton(
+                style: .primary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .small,
-                image: Image(systemName: "gift"),
+                image: Image(systemName: "xmark"),
                 action: {}
             )
+                .disabled(true)
 
             DesignButton(
+                style: .primary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .medium,
-                image: Image(systemName: "gift"),
+                image: Image(systemName: "xmark"),
                 action: {}
             )
-            .disabled(false)
+                .disabled(false)
 
             DesignButton(
+                style: .primary(DesignButton.DefaultDesignButtonColor()),
                 width: .fullSize,
                 size: .large,
                 title: "Checkout",
-                image: Image(systemName: "gift"),
+                image: Image(systemName: "xmark"),
                 action: {}
             )
-            .disabled(false)
+                .disabled(false)
 
             DesignButton(
+                style: .secondary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .medium,
                 title: "Belépés",
-                image: Image(systemName: "gift"),
+                image: Image(systemName: "xmark"),
                 action: {}
             )
-            .disabled(false)
+                .disabled(false)
 
             DesignButton(
-                width: .fluid,
-                size: .medium,
-                title: "Belépés",
-                action: {}
-            )
-            .disabled(false)
-            DesignButton(
+                style: .tertiary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .medium,
                 title: "Belépés",
                 action: {}
             )
-            .disabled(true)
-
-//            DesignButton(
-//                width: .fluid,
-//                size: .medium,
-//                title: "Belépés",
-//                colors: ButtonColor.normal,
-//                action: {}
-//            )
+                .disabled(false)
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(.dark)
     }
 }
-
-//enum ButtonColor: DesignButtonColorProtocol {
-//    case normal
-//
-//    func backgroundColor(isEnabled: Bool, isPressed: Bool) -> Color {
-//        .blue
-//    }
-//
-//    func textColor(isEnabled: Bool, isPressed: Bool) -> Color {
-//        .white
-//    }
-//}

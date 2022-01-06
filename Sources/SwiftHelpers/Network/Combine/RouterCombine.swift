@@ -47,6 +47,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
         addHeadersIfNeeded(request: &request, token: token ?? authenticator?.token?.accessToken)
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
+            .retry(3)
             .tryMap { [weak self] data, response -> Data in
                 if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode), let self = self {
                     throw self.httpError(response.statusCode)
@@ -71,7 +72,6 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
             .mapError { error -> RequestError in
                 return error as? RequestError ?? .requestFailed
             }
-            .retry(3)
             .eraseToAnyPublisher()
 
         if let authenticator = authenticator, endPoint.needLogin && !authenticator.isUserLoggedIn() {
