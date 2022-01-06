@@ -8,18 +8,20 @@
 import Foundation
 import Combine
 
-public enum RequestError: Error {
+public enum RequestError: Error, Equatable {
     case buildRequestFailed
     case requestFailed
-    case jsonDecodeFailed
+    case decodingError
     case unauthorized
     case forbidden
     case needLogin
+    case urlSessionFailed(_ error: URLError)
+    case unknownError(_ statusCode: Int?)
 }
 
 public protocol AuthenticatorProtocol {
     var token: AuthToken? { get set }
-    func promptLoginToUser() -> PassthroughSubject<AuthToken, Never>
+    func promptLoginToUser() -> AnyPublisher<AuthToken, RequestError>
     func refreshToken() -> AnyPublisher<AuthToken, RequestError>
     func isUserLoggedIn() -> Bool
 }
@@ -45,29 +47,17 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
         addHeadersIfNeeded(request: &request, token: token ?? authenticator?.token?.accessToken)
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
-            .tryMap { data, response -> ResponseType in
-                print("RESPONSE: \(endPoint.path) ---- \(String(data: data, encoding: .utf8) ?? "empty")")
-                guard let response = response as? HTTPURLResponse else { throw RequestError.requestFailed }
-                switch response.statusCode {
-                case 401:
-                    throw RequestError.unauthorized
-                case 403:
-                    throw RequestError.forbidden
-                case let statusCode where ((statusCode < 200) || (statusCode >= 300)):
-                    throw RequestError.requestFailed
-                default:
-                    print(response.statusCode)
+            .tryMap { [weak self] data, response -> Data in
+                if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode), let self = self {
+                    throw self.httpError(response.statusCode)
                 }
-                guard let decoded = try? JSONDecoder().decode(ResponseType.self, from: data) else {
-                    throw RequestError.jsonDecodeFailed
-                }
-                return decoded
+                return data
             }
+            .decode(type: ResponseType.self, decoder: JSONDecoder())
             .mapError { error -> RequestError in
                 return error as? RequestError ?? .requestFailed
             }
             .tryCatch { error -> AnyPublisher<ResponseType, RequestError> in
-                print("tryCatchERROR: \(endPoint.path) \(error)")
                 guard error == RequestError.unauthorized, let authenticator = self.authenticator else {
                     throw error
                 }
@@ -81,19 +71,12 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
             .mapError { error -> RequestError in
                 return error as? RequestError ?? .requestFailed
             }
+            .retry(3)
             .eraseToAnyPublisher()
 
         if let authenticator = authenticator, endPoint.needLogin && !authenticator.isUserLoggedIn() {
-            return authenticator
-                .promptLoginToUser()
-                .receive(on: RunLoop.main)
-                .flatMap { [weak self] newToken -> AnyPublisher<ResponseType, RequestError> in
-//                    guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
-//                    return self.publisher(endPoint)
-
-                    return Empty(completeImmediately: true).eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
+            _ = authenticator.promptLoginToUser()
+            return Empty(completeImmediately: true).eraseToAnyPublisher()
         }
         return dataTaskPublisher
 	}
@@ -124,6 +107,27 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
 	}
 
+    private func httpError(_ statusCode: Int) -> RequestError {
+        switch statusCode {
+        case 401: return .unauthorized
+        case 403: return .forbidden
+        default: return .unknownError(statusCode)
+        }
+    }
+
+    private func handleError(_ error: Error) -> RequestError {
+        switch error {
+        case is Swift.DecodingError:
+            return .decodingError
+        case let urlError as URLError:
+            return .urlSessionFailed(urlError)
+        case let error as RequestError:
+            return error
+        default:
+            return .unknownError(nil)
+        }
+    }
+
     func addHeadersIfNeeded(request: inout URLRequest, token: String?) {
         if let headers = config?.httpHeaders {
 			for (key, value) in headers {
@@ -131,8 +135,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 			}
 		}
         if let token = token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         }
-        print("------------------------------   HEADERSs: \(request.allHTTPHeaderFields)")
 	}
 }
