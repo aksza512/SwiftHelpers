@@ -11,12 +11,18 @@ import Combine
 public enum RequestError: Error, Equatable {
     case buildRequestFailed
     case requestFailed
+    case urlSessionFailed(_ error: URLError)
+    case unknownError(_ statusCode: Int?)
+
+    // Decode
     case decodingError
+
+    // Auth
     case unauthorized
     case forbidden
     case needLogin
-    case urlSessionFailed(_ error: URLError)
-    case unknownError(_ statusCode: Int?)
+    case noAuthenticator
+
 }
 
 public protocol AuthenticatorProtocol {
@@ -59,31 +65,21 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
             .retry(3)
             .tryMap { [weak self] data, response -> Data in
-                if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode), let self = self {
-                    self.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode), RESPONSE: \(response)]")
-                    throw self.httpError(response.statusCode)
-                }
+                try self?.isHttpError(response: response, request: request)
                 self?.logger.debug("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "no data")]")
                 return data
             }
             .decode(type: ResponseType.self, decoder: JSONDecoder())
-            .mapError { error -> RequestError in
-                return error as? RequestError ?? .requestFailed
+            .mapError {
+                $0 as? RequestError ?? .requestFailed
             }
-            .tryCatch { error -> AnyPublisher<ResponseType, RequestError> in
-                self.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(error.localizedDescription)]")
-                guard error == RequestError.unauthorized, let authenticator = self.authenticator else {
-                    throw error
-                }
-                return authenticator.refreshToken()
-                    .flatMap { [weak self] token -> AnyPublisher<ResponseType, RequestError> in
-                        guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
-                        return self.publisher(endPoint, token: token.accessToken)
-                    }
-                    .eraseToAnyPublisher()
+            .tryCatch { [weak self] error -> AnyPublisher<ResponseType, RequestError> in
+                self?.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(error.localizedDescription)]")
+                guard let self = self else { throw error }
+                return try self.handleError(error: error, endPoint: endPoint)
             }
-            .mapError { error -> RequestError in
-                return error as? RequestError ?? .requestFailed
+            .mapError {
+                $0 as? RequestError ?? .requestFailed
             }
             .eraseToAnyPublisher()
 
@@ -94,6 +90,31 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         }
         return dataTaskPublisher
 	}
+
+    private func refreshToken(endPoint: EndPoint) throws -> AnyPublisher<ResponseType, RequestError> {
+        guard let authenticator = authenticator else { throw RequestError.noAuthenticator }
+        return authenticator.refreshToken()
+            .flatMap { [weak self] token -> AnyPublisher<ResponseType, RequestError> in
+                guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
+                return self.publisher(endPoint, token: token.accessToken)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func handleError(error: Error, endPoint: EndPoint) throws -> AnyPublisher<ResponseType, RequestError> {
+        switch error {
+        case RequestError.unauthorized:
+            return try refreshToken(endPoint: endPoint)
+        case is Swift.DecodingError:
+            throw RequestError.decodingError
+        case let urlError as URLError:
+            throw RequestError.urlSessionFailed(urlError)
+        case let error as RequestError:
+            throw error
+        default:
+            throw RequestError.unknownError(nil)
+        }
+    }
 
 	private func buildRequest(from endPoint: EndPoint) throws -> URLRequest {
 //        var request = URLRequest(url: URL(string: "https://wodio-backend.herokuapp.com/v1")!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
@@ -120,24 +141,14 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
 	}
 
-    private func httpError(response: URLResponse, _ statusCode: Int) -> RequestError {
-        switch statusCode {
-        case 401: return .unauthorized
-        case 403: return .forbidden
-        default: return .unknownError(statusCode)
-        }
-    }
-
-    private func handleError(_ error: Error) -> RequestError {
-        switch error {
-        case is Swift.DecodingError:
-            return .decodingError
-        case let urlError as URLError:
-            return .urlSessionFailed(urlError)
-        case let error as RequestError:
-            return error
-        default:
-            return .unknownError(nil)
+    private func isHttpError(response: URLResponse, request: URLRequest) throws {
+        if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
+            logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode), RESPONSE: \(response)]")
+            switch response.statusCode {
+            case 401: throw RequestError.unauthorized
+            case 403: throw RequestError.forbidden
+            default: throw RequestError.unknownError(response.statusCode)
+            }
         }
     }
 
