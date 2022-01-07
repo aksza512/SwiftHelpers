@@ -18,18 +18,18 @@ public class DefaultLogger: LoggerProtocol {
 	}
 
 	public func debug(_ message: String) {
-		print(message)
+		print("💙\(message)")
 	}
 
 	public func info(_ message: String) {
-		print(message)
+        print("💜 \(message)")
 	}
 
 	public func warning(_ message: String) {
-		print(message)
+        print("💛 \(message)")
 	}
 
 	public func error(_ message: String) {
-		print(message)
+        print("❤️ \(message)")
 	}
 }
