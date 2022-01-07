@@ -55,14 +55,15 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
             return Fail(error: RequestError.buildRequestFailed).eraseToAnyPublisher()
 		}
         addHeadersIfNeeded(request: &request, token: token ?? authenticator?.token?.accessToken)
-//        logger.info("REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(bodyParameters?.debugDescription ?? "")]")
+        logger.info("REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: request.httpBody ?? Data(), encoding: .utf8) ?? "")], HEADER: [\(request.allHTTPHeaderFields ?? [:])]")
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
             .retry(3)
             .tryMap { [weak self] data, response -> Data in
                 if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode), let self = self {
-                    self.logger.debug("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode), RESPONSE: \(response)]")
+                    self.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode), RESPONSE: \(response)]")
                     throw self.httpError(response.statusCode)
                 }
+                self?.logger.debug("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "no data")]")
                 return data
             }
             .decode(type: ResponseType.self, decoder: JSONDecoder())
@@ -70,7 +71,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
                 return error as? RequestError ?? .requestFailed
             }
             .tryCatch { error -> AnyPublisher<ResponseType, RequestError> in
-                self.logger.debug("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(error.localizedDescription)]")
+                self.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(error.localizedDescription)]")
                 guard error == RequestError.unauthorized, let authenticator = self.authenticator else {
                     throw error
                 }
@@ -87,6 +88,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
             .eraseToAnyPublisher()
 
         if let authenticator = authenticator, endPoint.needLogin && !authenticator.isUserLoggedIn() {
+            self.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], ENDPOINT NEED LOGIN)]")
             _ = authenticator.promptLoginToUser()
             return Empty(completeImmediately: true).eraseToAnyPublisher()
         }
@@ -100,10 +102,9 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		do {
 			switch endPoint.requestType {
 			case .request:
-                logger.info("REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: []")
+                break
 			case .requestParameters(let bodyParameters, let bodyEncoding, let urlParameters, let dataArray):
 				try self.configureParameters(bodyParameters: bodyParameters, bodyEncoding: bodyEncoding, urlParameters: urlParameters, request: &request, dataArray: dataArray)
-                logger.info("REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(bodyParameters?.debugDescription ?? "")]")
 			}
 			return request
 		} catch {
@@ -119,7 +120,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
 	}
 
-    private func httpError(_ statusCode: Int) -> RequestError {
+    private func httpError(response: URLResponse, _ statusCode: Int) -> RequestError {
         switch statusCode {
         case 401: return .unauthorized
         case 403: return .forbidden
@@ -149,6 +150,5 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         if let token = token {
             request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         }
-        logger.info("HEADER: [\(request.allHTTPHeaderFields ?? [:])]")
 	}
 }
