@@ -53,9 +53,9 @@ public struct DesignButton: View {
     }
 
     public enum Style {
-        case primary(_ colors: AppButtonColors)
-        case secondary(_ colors: AppButtonColors)
-        case tertiary(_ colors: AppButtonColors)
+        case primary(_ colors: AppButtonColors = DefaultDesignButtonColor())
+        case secondary(_ colors: AppButtonColors = DefaultDesignButtonColor())
+        case tertiary(_ colors: AppButtonColors = DefaultDesignButtonColor())
     }
 
     let style: Style

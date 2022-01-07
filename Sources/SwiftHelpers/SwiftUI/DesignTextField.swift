@@ -23,7 +23,7 @@ public struct DesignTextField: View {
         public var title: Color = Color(.label)
         public var titleImage: Color = Color(.secondaryLabel)
         public var trailingButton: Color = Color(.secondaryLabel)
-        public var bgr: Color = .clear
+        public var bgr: Color = Color(.systemGray6)
         public var bgrDisabled: Color = Color(.systemGray5)
         public var hintText: Color = Color(.secondaryLabel)
         public var cursorColor: Color = Color(.label)
@@ -57,6 +57,7 @@ public struct DesignTextField: View {
     let infoButtonImageAction: (() -> Void)?
     let secured: Bool
     let appColors: AppTextFieldColors
+    let showBorder: Bool
     @Binding var text: String
     @FocusState private var focused: Bool
 
@@ -71,6 +72,7 @@ public struct DesignTextField: View {
         infoButtonImageAction: (() -> Void)? = nil,
         secured: Bool = false,
         appColors: AppTextFieldColors = DefaultDesignTextFieldColor(),
+        showBorder: Bool = false,
         validationState: ValidationState
     ) {
         self._text = text
@@ -83,6 +85,7 @@ public struct DesignTextField: View {
         self.infoButtonImageAction = infoButtonImageAction
         self.secured = secured
         self.appColors = appColors
+        self.showBorder = showBorder
         self.state = validationState
     }
 
@@ -130,6 +133,7 @@ public struct DesignTextField: View {
                 }
             }
             .background(appColors.bgr)
+            .cornerRadius(cornerRadius)
 
             if let errorText = errorText, !errorText.isEmpty {
                 errorView(with: errorText)
@@ -157,7 +161,7 @@ public struct DesignTextField: View {
                 .frame(height: height)
 
             RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(lineWidth: 2)
+                .stroke(lineWidth: 1)
                 .foregroundColor(borderColor)
                 .frame(height: height)
         }
@@ -309,6 +313,7 @@ private struct EditorView: View {
     }
 }
 
+@available(iOS 14.0, *)
 private struct SecureEditorView: View {
     @Environment(\.isEnabled) var isEnabled
 
@@ -351,6 +356,7 @@ private struct SecureEditorView: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct CustomSecureTextField: UIViewRepresentable {
 
     class Coordinator: NSObject, UITextFieldDelegate {
@@ -379,7 +385,7 @@ struct CustomSecureTextField: UIViewRepresentable {
         textField.textContentType = .password
         textField.font = font
         textField.placeholder = prompt
-        //        textField.textColor = UIColor(textColor)
+        textField.textColor = UIColor(textColor)
         return textField
     }
 
