@@ -63,6 +63,8 @@ public struct DesignButton: View {
     let size: Size
     let title: String?
     let image: Image?
+    let bgrColor: Color?
+    let spacer: Bool
     let action: () -> Void
 
     public init(
@@ -71,12 +73,16 @@ public struct DesignButton: View {
         size: Size = .large,
         title: String? = nil,
         image: Image? = nil,
+        bgrColor: Color? = nil,
+        spacer: Bool = false,
         action: @escaping () -> Void) {
             self.style = style
             self.width = width
             self.size = size
             self.title = title
             self.image = image
+            self.bgrColor = bgrColor
+            self.spacer = spacer
             self.action = action
         }
 
@@ -95,6 +101,7 @@ public struct DesignButton: View {
                             .resizable()
                             .frame(width: imageSize, height: imageSize)
                     }
+                    if spacer { Spacer() }
                     if let title = title, hasTitle {
                         Text(title)
                             .multilineTextAlignment(.center)
@@ -102,12 +109,13 @@ public struct DesignButton: View {
                     if width == .fullSize {
                         Spacer()
                     }
+                    if spacer { Spacer() }
                 }
                 .padding(.horizontal, padding)
                 .frame(minWidth: height)
                 .frame(height: height)
             })
-            .buttonStyle(ThemedButtonStyle(style: style))
+            .buttonStyle(ThemedButtonStyle(style: style, bgrColor: bgrColor))
             .font(font)
     }
 
@@ -142,7 +150,7 @@ public struct DesignButton: View {
         case .medium:
             return .m
         case .large:
-            return .l
+            return .xxl
         case .giant:
             return .xxl
         }
@@ -215,19 +223,29 @@ private extension DesignButton.Style {
 private struct ThemedButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     private let style: DesignButton.Style
+    private let bgrColor: Color?
 
-    init(style: DesignButton.Style) {
+    init(style: DesignButton.Style, bgrColor: Color? = nil) {
         self.style = style
+        self.bgrColor = bgrColor
     }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(
-                Capsule().fill(
-                    style.backgroundColor(
-                        isEnabled: isEnabled,
-                        isPressed: configuration.isPressed)
-                )
+                Group {
+                    if let bgrColor = bgrColor {
+                        Capsule().fill(
+                            Color(configuration.isPressed ? UIColor(bgrColor).darker() : UIColor(bgrColor))
+                        )
+                    } else {
+                        Capsule().fill(
+                            style.backgroundColor(
+                                isEnabled: isEnabled,
+                                isPressed: configuration.isPressed)
+                        )
+                    }
+                }
             )
             .foregroundColor(
                 style.textColor(
@@ -271,11 +289,23 @@ struct DesignButton_Previews: PreviewProvider {
                 .disabled(false)
 
             DesignButton(
+                style: .primary(DesignButton.DefaultDesignButtonColor()),
+                width: .fluid,
+                size: .large,
+                title: "Checkout",
+                image: Image(systemName: "xmark"),
+                spacer: true,
+                action: {}
+            )
+                .disabled(false)
+
+            DesignButton(
                 style: .secondary(DesignButton.DefaultDesignButtonColor()),
                 width: .fluid,
                 size: .medium,
                 title: "Belépés",
                 image: Image(systemName: "xmark"),
+                bgrColor: .red,
                 action: {}
             )
                 .disabled(false)

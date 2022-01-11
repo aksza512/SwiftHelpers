@@ -144,7 +144,6 @@ public struct DesignTextField: View {
                     .padding(.top, .xs)
             }
         }
-        .padding(.vertical, .m)
     }
 
     var prefixView: some View {
