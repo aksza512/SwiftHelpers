@@ -8,14 +8,14 @@
 import Foundation
 import Combine
 
-public enum RequestError: Error, Equatable {
+public enum RequestError: Error {
     case buildRequestFailed
-    case requestFailed
-    case urlSessionFailed(_ error: URLError)
+    case requestFailed(_ error: Error)
+    case urlSessionFailed(_ error: Error)
     case unknownError(_ statusCode: Int?)
 
     // Decode
-    case decodingError
+    case decodingError(_ error: Error)
 
     // Auth
     case unauthorized
@@ -70,16 +70,13 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
                 return data
             }
             .decode(type: ResponseType.self, decoder: JSONDecoder())
-            .mapError {
-                $0 as? RequestError ?? .requestFailed
-            }
             .tryCatch { [weak self] error -> AnyPublisher<ResponseType, RequestError> in
-                self?.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(error.localizedDescription)]")
                 guard let self = self else { throw error }
                 return try self.handleError(error: error, endPoint: endPoint)
             }
-            .mapError {
-                $0 as? RequestError ?? .requestFailed
+            .mapError { [weak self] error -> RequestError in
+                self?.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], ERROR: [\(error)]")
+                return error as? RequestError ?? .requestFailed(error)
             }
             .eraseToAnyPublisher()
 
@@ -106,7 +103,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         case RequestError.unauthorized:
             return try refreshToken(endPoint: endPoint)
         case is Swift.DecodingError:
-            throw RequestError.decodingError
+            throw RequestError.decodingError(error)
         case let urlError as URLError:
             throw RequestError.urlSessionFailed(urlError)
         case let error as RequestError:

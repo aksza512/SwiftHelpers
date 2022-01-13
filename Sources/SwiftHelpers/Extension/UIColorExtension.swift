@@ -67,4 +67,8 @@ public extension UIColor {
 					   blue: .random(in: 0...1),
 					   alpha: 1.0)
 	}
+
+    var color: Color {
+        Color(self)
+    }
 }
