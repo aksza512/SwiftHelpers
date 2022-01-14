@@ -69,4 +69,12 @@ public extension Array where Element: Any {
 		if abs(newIndex - oldIndex) == 1 { return self.swapAt(oldIndex, newIndex) }
 		self.insert(self.remove(at: oldIndex), at: newIndex)
 	}
+
+    mutating func mutateEach(by transform: (inout Element) throws -> Void) rethrows {
+        self = try map { el in
+            var el = el
+            try transform(&el)
+            return el
+        }
+    }
 }

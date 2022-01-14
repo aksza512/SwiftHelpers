@@ -9,6 +9,8 @@ import CoreGraphics
 
 // swiftlint:disable identifier_name
 public extension CGFloat {
+    /// 2
+    static let xxxs: CGFloat = 2
     /// 4
     static let xxs: CGFloat = 4
     /// 8
