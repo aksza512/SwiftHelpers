@@ -10,18 +10,15 @@ import Combine
 
 public enum RequestError: Error {
     case buildRequestFailed
-    case requestFailed(_ error: Error)
-    case urlSessionFailed(_ error: Error)
-    case unknownError(_ statusCode: Int?)
+    case unknownError(error: Error?, statusCode: Int?, data: Data?)
 
     // Decode
-    case decodingError(_ error: Error)
+    case decodingError(error: Error)
 
     // Auth
     case unauthorized
-    case forbidden
-    case needLogin
-    case noAuthenticator
+    case forbidden(data: Data?)
+    case authenticatorNotImplemented
 
 }
 
@@ -63,9 +60,9 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         addHeadersIfNeeded(request: &request, token: token ?? authenticator?.token?.accessToken)
         logger.info("REQ \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: request.httpBody ?? Data(), encoding: .utf8) ?? "")], HEADER: [\(request.allHTTPHeaderFields ?? [:])]")
 		let dataTaskPublisher = session.dataTaskPublisher(for: request)
-            .retry(3)
+            .retry(1)
             .tryMap { [weak self] data, response -> Data in
-                try self?.isHttpError(response: response, request: request)
+                try self?.isHttpError(response: response, data: data, request: request)
                 self?.logger.debug("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "no data")]")
                 return data
             }
@@ -76,7 +73,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
             }
             .mapError { [weak self] error -> RequestError in
                 self?.logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], ERROR: [\(error)]")
-                return error as? RequestError ?? .requestFailed(error)
+                return error as? RequestError ?? .unknownError(error: error, statusCode: nil, data: nil)
             }
             .eraseToAnyPublisher()
 
@@ -89,7 +86,7 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 	}
 
     private func refreshToken(endPoint: EndPoint) throws -> AnyPublisher<ResponseType, RequestError> {
-        guard let authenticator = authenticator else { throw RequestError.noAuthenticator }
+        guard let authenticator = authenticator else { throw RequestError.authenticatorNotImplemented }
         return authenticator.refreshToken()
             .flatMap { [weak self] token -> AnyPublisher<ResponseType, RequestError> in
                 guard let self = self else { return Empty(completeImmediately: true).eraseToAnyPublisher() }
@@ -103,13 +100,11 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
         case RequestError.unauthorized:
             return try refreshToken(endPoint: endPoint)
         case is Swift.DecodingError:
-            throw RequestError.decodingError(error)
-        case let urlError as URLError:
-            throw RequestError.urlSessionFailed(urlError)
+            throw RequestError.decodingError(error: error)
         case let error as RequestError:
             throw error
         default:
-            throw RequestError.unknownError(nil)
+            throw RequestError.unknownError(error: error, statusCode: nil, data: nil)
         }
     }
 
@@ -138,13 +133,13 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
 	}
 
-    private func isHttpError(response: URLResponse, request: URLRequest) throws {
+    private func isHttpError(response: URLResponse, data: Data?, request: URLRequest) throws {
         if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
-            logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode), RESPONSE: \(response)]")
+            logger.error("RES \(request.httpMethod ?? "UNKNOWN HTTP METHOD"): [\(request.url?.absoluteString ?? "")], STATUSCODE: [\(response.statusCode)], DATA: [\(String(data: data ?? Data(), encoding: .utf8) ?? "NO DATA")]")
             switch response.statusCode {
             case 401: throw RequestError.unauthorized
-            case 403: throw RequestError.forbidden
-            default: throw RequestError.unknownError(response.statusCode)
+            case 403: throw RequestError.forbidden(data: data)
+            default: throw RequestError.unknownError(error: nil, statusCode: response.statusCode, data: data)
             }
         }
     }
