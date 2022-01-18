@@ -9,6 +9,31 @@ import Foundation
 import UIKit
 
 public extension String {
+    func base64Decoded() -> String? {
+        guard let data = Data(base64Encoded: self) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    func base64Encoded() -> String? {
+        data(using: .utf8)?.base64EncodedString()
+    }
+
+    static func getDecodedJwtBodyString(tokenstr: String) -> (String?, Data?) {
+        let segments = tokenstr.components(separatedBy: ".")
+        var base64String = segments[1]
+        let requiredLength = Int(4 * ceil(Float(base64String.count) / 4.0))
+        let nbrPaddings = requiredLength - base64String.count
+        if nbrPaddings > 0 {
+            let padding = String().padding(toLength: nbrPaddings, withPad: "=", startingAt: 0)
+            base64String = base64String.appending(padding)
+        }
+        base64String = base64String.replacingOccurrences(of: "-", with: "+")
+        base64String = base64String.replacingOccurrences(of: "_", with: "/")
+        let decodedData = Data(base64Encoded: base64String, options: Data.Base64DecodingOptions(rawValue: UInt(0)))
+        let base64Decoded: String = String(data: decodedData! as Data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+        return (base64Decoded, decodedData)
+    }
+
 	func width(withConstrainedHeight height: CGFloat, font: UIFont) -> CGFloat {
 		let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height);
 		let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
