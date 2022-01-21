@@ -7,8 +7,24 @@
 
 import Foundation
 import UIKit
+import CryptoKit
 
 public extension String {
+    var sha512: String {
+        let hashed = SHA512.hash(data: Data(self.utf8))
+        return hashed.compactMap { String(format: "%02x", $0) }.joined()
+    }
+
+    func isValidEmailAddress() -> Bool {
+        let emailPattern = #"^\S+@\S+\.\S+$"#
+        let result = self.range(
+            of: emailPattern,
+            options: .regularExpression
+        )
+        return result != nil
+    }
+
+
     func base64Decoded() -> String? {
         guard let data = Data(base64Encoded: self) else { return nil }
         return String(data: data, encoding: .utf8)

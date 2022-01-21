@@ -160,7 +160,7 @@ public struct DesignTextField: View {
                 .frame(height: height)
 
             RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(lineWidth: 1)
+                .stroke(lineWidth: 2)
                 .foregroundColor(borderColor)
                 .frame(height: height)
         }
@@ -286,7 +286,7 @@ private struct EditorView: View {
                 Image(systemName: "checkmark")
                     .resizable()
                     .foregroundColor(appColors.validated)
-                    .frame(width: 24, height: 24)
+                    .frame(width: 10, height: 10)
                     .padding()
             case .loading:
                 ProgressView()
@@ -335,6 +335,7 @@ private struct SecureEditorView: View {
                 .foregroundColor(textColor)
                 .accentColor(cursorColor)
                 .padding()
+                .offset(x: -8)
 
             if !text.isEmpty && isEnabled {
                 Button(
@@ -342,13 +343,13 @@ private struct SecureEditorView: View {
                         isRevealed = !isRevealed
                     },
                     label: {
-                        Image(isRevealed ? "eye" : "eye.fill")
+                        Image(systemName: isRevealed ? "eye" : "eye.fill")
                             .resizable()
-                            .frame(width: 24, height: 24)
                             .foregroundColor(
                                 appColors.eye
                             )
                             .padding()
+                            .aspectRatio(contentMode: .fit)
                     })
             }
         }
@@ -435,8 +436,7 @@ struct DesignTextField_Previews: PreviewProvider {
                 .padding()
 
             DesignTextField(
-                title: "Secured",
-                text: .constant(""),
+                text: .constant("asdfqwefwer"),
                 prompt: "secured",
                 secured: true,
                 validationState: .error(text: "asd")
@@ -450,7 +450,7 @@ struct DesignTextField_Previews: PreviewProvider {
             )
                 .padding()
                 .disabled(true)
-                .preferredColorScheme(.light)
+                .preferredColorScheme(.dark)
         }
     }
 }
