@@ -9,7 +9,21 @@ import Foundation
 import UIKit
 import CryptoKit
 
+public extension StringProtocol {
+    subscript(offset: Int) -> String? {
+        guard self.count > offset else { return nil }
+        return String(self[index(startIndex, offsetBy: offset)])
+    }
+}
+
 public extension String {
+    var isAlphaNumeric: Bool {
+        let hasLetters = rangeOfCharacter(from: .letters, options: .numeric, range: nil) != nil
+        let hasNumbers = rangeOfCharacter(from: .decimalDigits, options: .literal, range: nil) != nil
+        let comps = components(separatedBy: .alphanumerics)
+        return comps.joined(separator: "").count == 0 && hasLetters && !hasNumbers
+    }
+
     var sha512: String {
         let hashed = SHA512.hash(data: Data(self.utf8))
         return hashed.compactMap { String(format: "%02x", $0) }.joined()
