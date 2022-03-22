@@ -13,7 +13,7 @@ public extension Dictionary where Key == String, Value: Any {
 		self[key] = value
 	}
     
-    func safeGet(_ key: String) -> Value? {
+    func safeGet(_ key: Key) -> Value? {
         if let val = dict[key] {
             return val
         }
