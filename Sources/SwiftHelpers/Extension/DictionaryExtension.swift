@@ -12,4 +12,11 @@ public extension Dictionary where Key == String, Value: Any {
 		guard let value = value else { return }
 		self[key] = value
 	}
+    
+    func safeGet(_ key: String) -> Value? {
+        if let val = dict[key] {
+            return val
+        }
+        return nil
+    }
 }
