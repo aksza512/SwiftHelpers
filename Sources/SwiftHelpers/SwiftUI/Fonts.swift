@@ -33,6 +33,7 @@ public extension UIFont {
     static let body1 = UIFont.rounded(ofSize: 16)
 
     static let headings4 = UIFont.rounded(ofSize: 20, weight: .bold)
+    static let headings7 = UIFont.rounded(ofSize: 11, weight: .bold)
 
     static func rounded(ofSize size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
         let systemFont = UIFont.systemFont(ofSize: size, weight: weight)
