@@ -14,6 +14,7 @@ public protocol EndPoint {
     var httpMethod: HTTPMethod { get }
     var requestType: RequestType { get }
 	var needLogin: Bool { get }
+    var sendPrefix: Bool { get }
 }
 
 public protocol CombineEndPoint {

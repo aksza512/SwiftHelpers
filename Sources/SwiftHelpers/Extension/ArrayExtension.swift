@@ -19,6 +19,11 @@ public extension Array where Element: Equatable {
 		guard (self.count - 1) >= at else { return }
 		remove(at: at)
 	}
+    
+    mutating func safeIndex(_ object: Element?) -> Int? {
+        guard let object = object else { return nil }
+        return self.firstIndex(of: object)
+    }
 
 	mutating func appendDistinctionObject(_ object: Element) {
 		if !self.contains(object) {

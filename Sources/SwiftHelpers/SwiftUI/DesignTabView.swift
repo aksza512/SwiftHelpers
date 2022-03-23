@@ -180,7 +180,7 @@ public struct TabPagerView: View {
 
     public var body: some View {
         TabView(selection: $selectedTab) {
-            ForEach(0 ..< views.count) { index in
+            ForEach(0 ..< views.count, id: \.self) { index in
                 views[index]
                     .tag(index)
             }

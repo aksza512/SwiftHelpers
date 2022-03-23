@@ -134,7 +134,13 @@ public class Router<T: EndPoint> {
     }
 	
 	fileprivate func buildRequest(from endPoint: T) throws -> URLRequest {
-        var request = URLRequest(url: endPoint.baseURL.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
+        let baseUrl: URL?
+        if let pathPrefix = routerConfig.routerConfigDelegate?.pathPrefix(), endPoint.sendPrefix {
+            baseUrl = endPoint.baseURL.appendingPathComponent(pathPrefix)
+        } else {
+            baseUrl = endPoint.baseURL
+        }
+        var request = URLRequest(url: baseUrl!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
         request.httpMethod = endPoint.httpMethod.rawValue
         do {
             switch endPoint.requestType {

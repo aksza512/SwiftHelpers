@@ -24,6 +24,7 @@ public protocol RouterConfigDelegate: AnyObject {
 	// AccessToken
 	func accessToken() -> String?
 	func refreshToken() -> String?
+    func pathPrefix() -> String?
 }
 
 open class RouterConfig: NSObject {
