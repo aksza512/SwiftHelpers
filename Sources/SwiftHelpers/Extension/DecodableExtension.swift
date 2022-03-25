@@ -52,5 +52,8 @@ public struct StringForcible: Codable {
     public init() {
         self.wrappedValue = nil
     }
-    
+
+    public init(wrappedValue: String?) {
+        self.wrappedValue = wrappedValue
+    }
 }
