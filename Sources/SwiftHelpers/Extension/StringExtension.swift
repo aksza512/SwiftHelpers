@@ -151,6 +151,10 @@ public extension String {
     private func trimmingAllSpaces(using characterSet: CharacterSet) -> String {
         return components(separatedBy: characterSet).joined()
     }
+    
+    func changeSubstring(findString: String, toString: String) -> String {
+        self.replacingOccurrences(of: findString, with: toString)
+    }
 }
 
 public extension NSMutableAttributedString {
