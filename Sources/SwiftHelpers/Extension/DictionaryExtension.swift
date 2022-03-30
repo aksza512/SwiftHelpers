@@ -19,4 +19,9 @@ public extension Dictionary where Key == String, Value: Any {
         }
         return nil
     }
+    
+    func castToObject<T: Decodable>() -> T? {
+        let json = try? JSONSerialization.data(withJSONObject: self)
+        return json == nil ? nil : try? JSONDecoder().decode(T.self, from: json!)
+    }
 }

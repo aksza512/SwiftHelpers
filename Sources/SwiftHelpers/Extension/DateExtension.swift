@@ -11,6 +11,39 @@ public extension Date {
 	func isBetween(_ date1: Date, and date2: Date) -> Bool {
 	   return (min(date1, date2) ... max(date1, date2)).contains(self)
 	}
+    
+    var today: Date? {
+        let calendar = Calendar.current
+        return calendar.dateInterval(of: .day, for: self)?.start
+    }
+    
+    var yesterday: Date? {
+        let calendar = Calendar.current
+        let now = Date()
+        var components = calendar.dateComponents([.hour, .minute, .second], from: now)
+        components.hour = -(components.hour ?? 0)
+        components.minute = -(components.minute ?? 0)
+        components.second = -(components.second ?? 0)
+        let today = calendar.date(byAdding: components, to: now)
+        components.hour = -24
+        components.minute = 0
+        components.second = 0
+        return calendar.date(byAdding: components, to: today ?? Date())
+    }
+
+    var tomorrow: Date? {
+        let calendar = Calendar.current
+        let now = Date()
+        var components = calendar.dateComponents([.hour, .minute, .second], from: now)
+        components.hour = -(components.hour ?? 0)
+        components.minute = -(components.minute ?? 0)
+        components.second = -(components.second ?? 0)
+        let today = calendar.date(byAdding: components, to: now)
+        components.hour = +24
+        components.minute = 0
+        components.second = 0
+        return calendar.date(byAdding: components, to: today ?? Date())
+    }
 
 	var startOfWeek: Date? {
 	   let calendar = Calendar.current

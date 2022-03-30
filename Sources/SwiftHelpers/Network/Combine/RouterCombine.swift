@@ -125,9 +125,9 @@ public class RouterCombine<EndPoint: CombineEndPoint, ResponseType: Codable> {
 		}
 	}
 
-	private func configureParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding, urlParameters: Parameters?, request: inout URLRequest, dataArray: [(String, Data)]?) throws {
+	private func configureParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding?, urlParameters: Parameters?, request: inout URLRequest, dataArray: [(String, Data)]?) throws {
 		do {
-			try bodyEncoding.encode(urlRequest: &request, bodyParameters: bodyParameters, urlParameters: urlParameters, dataArray: dataArray)
+			try bodyEncoding?.encode(urlRequest: &request, bodyParameters: bodyParameters, urlParameters: urlParameters, dataArray: dataArray)
 		} catch {
 			throw error
 		}

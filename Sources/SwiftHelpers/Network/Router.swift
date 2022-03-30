@@ -140,8 +140,8 @@ public class Router<T: EndPoint> {
         } else {
             baseUrl = endPoint.baseURL
         }
-        var request = URLRequest(url: baseUrl!.appendingPathComponent(endPoint.path), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
-        request.httpMethod = endPoint.httpMethod.rawValue
+        var request = URLRequest(url: URL(string: baseUrl!.absoluteString + endPoint.path)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
+        request.httpMethod = endPoint.httpMethod.raw
         do {
             switch endPoint.requestType {
             case .request:
@@ -156,9 +156,9 @@ public class Router<T: EndPoint> {
         }
     }
     
-	fileprivate func configureParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding, urlParameters: Parameters?, request: inout URLRequest, dataArray: [(String, Data)]?) throws {
+	fileprivate func configureParameters(bodyParameters: Parameters?, bodyEncoding: ParameterEncoding?, urlParameters: Parameters?, request: inout URLRequest, dataArray: [(String, Data)]?) throws {
         do {
-            try bodyEncoding.encode(urlRequest: &request, bodyParameters: bodyParameters, urlParameters: urlParameters, dataArray: dataArray)
+            try bodyEncoding?.encode(urlRequest: &request, bodyParameters: bodyParameters, urlParameters: urlParameters, dataArray: dataArray)
         } catch {
             throw error
         }
