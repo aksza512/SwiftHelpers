@@ -141,7 +141,7 @@ public class Router<T: EndPoint> {
             baseUrl = endPoint.baseURL
         }
         var request = URLRequest(url: URL(string: baseUrl!.absoluteString + endPoint.path)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 10.0)
-        request.httpMethod = endPoint.httpMethod.raw
+        request.httpMethod = endPoint.httpMethod.rawValue
         do {
             switch endPoint.requestType {
             case .request:
