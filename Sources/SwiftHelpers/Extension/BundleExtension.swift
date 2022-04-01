@@ -33,7 +33,7 @@ public extension Bundle {
 		}
 	}
 	
-	func loadFirst(_ fromNib: String) -> Any? {
+	func loadFirst(fromNib: String) -> Any? {
 		return loadNibNamed(fromNib, owner: nil, options: nil)?.first
 	}
 }

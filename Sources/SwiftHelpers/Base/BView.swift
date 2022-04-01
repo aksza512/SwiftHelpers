@@ -1,5 +1,5 @@
 //
-//  BaseView.swift
+//  BView.swift
 //  SwiftHelpers
 //
 //  Created by Márk József Alexa on 2020. 08. 17..

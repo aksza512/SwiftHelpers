@@ -348,5 +348,5 @@ public extension UIView {
 
 		layer.position = position
 		layer.anchorPoint = point
-	}
+	}    
 }
