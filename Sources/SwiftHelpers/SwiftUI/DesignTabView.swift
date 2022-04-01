@@ -149,6 +149,7 @@ public struct TabHeaderView: View {
     let titleColorSelected: Color
     let underlineColor: Color
     let fullHeightHeader: Bool
+    let bgrColor: Color
 
     @Namespace private var namespace
 
@@ -158,7 +159,8 @@ public struct TabHeaderView: View {
         titleColor: Color = UIColor.label.color,
         titleColorSelected: Color = UIColor.systemGray.color,
         underlineColor: Color = UIColor.secondaryLabel.color,
-        fullHeightHeader: Bool = false
+        fullHeightHeader: Bool = false,
+        bgrColor: Color = .clear
     ) {
         self._selectedTab = selectedTab
         self.tabs = tabs
@@ -166,11 +168,13 @@ public struct TabHeaderView: View {
         self.titleColorSelected = titleColorSelected
         self.underlineColor = underlineColor
         self.fullHeightHeader = fullHeightHeader
+        self.bgrColor = bgrColor
     }
 
     public var body: some View {
         ZStack(alignment: .bottom) {
             buttons
+                .background(bgrColor)
             underline
         }
     }
@@ -248,7 +252,7 @@ struct DesignTabView_Previews: PreviewProvider {
         ZStack {
             DesignTabView()
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(.dark)
     }
 }
 
