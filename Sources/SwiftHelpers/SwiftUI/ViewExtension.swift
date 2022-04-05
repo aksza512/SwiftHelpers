@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 public extension View {
     @ViewBuilder
@@ -29,5 +30,38 @@ public extension View {
 
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+public struct RoundedCorner: Shape {
+
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    public func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
+private struct SafeAreaInsetsKey: EnvironmentKey {
+    static var defaultValue: EdgeInsets {
+        UIApplication.shared.keyWindow?.safeAreaInsets.edgeInsets ?? EdgeInsets()
+    }
+}
+
+private extension UIEdgeInsets {
+    var edgeInsets: EdgeInsets {
+        EdgeInsets(top: top, leading: left, bottom: bottom, trailing: right)
+    }
+}
+
+public extension EnvironmentValues {
+    var keyWindowSafeAreaInsets: EdgeInsets {
+        self[SafeAreaInsetsKey.self]
     }
 }
