@@ -111,7 +111,8 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+//							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {
@@ -193,7 +194,10 @@ public class Router<T: EndPoint> {
 		if let token = isRefresh ? routerConfig.routerConfigDelegate?.refreshToken() : routerConfig.routerConfigDelegate?.accessToken() {
 			request.setValue("\(token)", forHTTPHeaderField: "Authorization")
 		}
-	}
+        if let deviceId = routerConfig.routerConfigDelegate?.deviceId() {
+            request.setValue("\(deviceId)", forHTTPHeaderField: "deviceId")
+        }
+    }
 
 	func isRequestFailed(_ statusCode: Int) -> Bool {
 		return ((statusCode < 200) || (statusCode >= 300))
