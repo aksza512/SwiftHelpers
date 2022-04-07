@@ -64,6 +64,10 @@ public extension String {
         let comps = components(separatedBy: .alphanumerics)
         return comps.joined(separator: "").count == 0 && hasLetters && !hasNumbers
     }
+    
+    var isDecimalDigits: Bool {
+        CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: self))
+    }
 
     var sha512: String {
         let hashed = SHA512.hash(data: Data(self.utf8))
