@@ -8,7 +8,8 @@
 import Foundation
 
 public extension Date {
-	func isBetween(_ date1: Date, and date2: Date) -> Bool {
+	func isBetween(_ date1: Date?, and date2: Date?) -> Bool {
+        guard let date1 = date1, let date2 = date2 else { return false }
 	   return (min(date1, date2) ... max(date1, date2)).contains(self)
 	}
     
@@ -43,6 +44,18 @@ public extension Date {
         components.minute = 0
         components.second = 0
         return calendar.date(byAdding: components, to: today ?? Date())
+    }
+    
+    var hour: Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let ret = calendar.component(.hour, from: self)
+        return ret
+    }
+
+    var minute: Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let ret = calendar.component(.minute, from: self)
+        return ret
     }
 
 	var startOfWeek: Date? {

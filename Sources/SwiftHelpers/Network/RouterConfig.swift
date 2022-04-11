@@ -12,7 +12,7 @@ public typealias NeedLoginForRequestCompletionBlock = () -> Void
 
 public protocol RouterConfigDelegate: AnyObject {
 	// Authorization error 401
-	func handleAuthorizationError(data: Data?)
+	func handleAuthorizationError(data: Data?, _ completion: (() -> Void)?)
 	// Authorization error 403
 	func handleLogout()
 	// Overwrite customError if needed

@@ -170,7 +170,7 @@ public class Router<T: EndPoint> {
 			self.request(endPoint, completion: completion)
 		}
 		routerConfig.refreshTokenCompletions.append(completionBlock)
-		routerConfig.routerConfigDelegate?.handleAuthorizationError(data: data)
+		routerConfig.routerConfigDelegate?.handleAuthorizationError(data: data, nil)
 	}
 
 	func handleLogout() {
