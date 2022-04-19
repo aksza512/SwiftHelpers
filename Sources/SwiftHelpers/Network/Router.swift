@@ -94,7 +94,7 @@ public class Router<T: EndPoint> {
 				// SERVER error
 				if let response = response as? HTTPURLResponse, self.isRequestFailed(response.statusCode) {
 					self.logger.error("RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
-					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode), !shouldHandleError {
+					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode, (error as? NetworkError) ?? .unknown), !shouldHandleError {
 						DispatchQueue.main.async {
 							completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown)))
 						}
@@ -111,8 +111,8 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-//							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
-                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
+							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {

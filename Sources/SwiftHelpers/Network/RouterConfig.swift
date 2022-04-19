@@ -16,7 +16,7 @@ public protocol RouterConfigDelegate: AnyObject {
 	// Authorization error 403
 	func handleLogout()
 	// Overwrite customError if needed
-	func shouldHandleApplicationError(_ statusCode: Int) -> Bool
+    func shouldHandleApplicationError(_ statusCode: Int, _ error: NetworkError) -> Bool
 	// Is user logged in
 	func isUserLoggedIn() -> Bool
 	// Need Login For Request
