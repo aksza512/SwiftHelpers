@@ -66,7 +66,7 @@ public class Router<T: EndPoint> {
 				if error != nil || data == nil {
 					self.logger.error("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], CLIENT ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
 					DispatchQueue.main.async {
-						completion(.failure(.clientError((error as? NetworkError) ?? .unknown)))
+						completion(.failure(.clientError((error as? NetworkError) ?? .unknown, (response as? HTTPURLResponse)?.statusCode)))
 					}
 					return
 				}
@@ -96,7 +96,7 @@ public class Router<T: EndPoint> {
 					self.logger.error("RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
 					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode, (error as? NetworkError) ?? .unknown), !shouldHandleError {
 						DispatchQueue.main.async {
-							completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown)))
+                            completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown, response.statusCode)))
 						}
 					}
 					return

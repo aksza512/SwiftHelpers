@@ -51,8 +51,8 @@ public indirect enum NetworkError : Error {
     case encodingFailed
     case missingURL
 	case tokenRefreshFailed
-	case clientError(_ error: NetworkError)
-	case serverError(_ data: Data?, _ response: HTTPURLResponse?, _ error: NetworkError?)
+    case clientError(_ error: NetworkError, _ statusCode: Int?)
+	case serverError(_ data: Data?, _ response: HTTPURLResponse?, _ error: NetworkError?, _ statusCode: Int?)
 	case error401(_ data: Data?, _ response: HTTPURLResponse?)
 	case unknown
 }
