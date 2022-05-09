@@ -159,13 +159,13 @@ public struct DesignButton: View {
     var font: Font {
         switch size {
         case .small:
-            return .headings7
+            return .subBold
         case .medium:
-            return .headings6
+            return .textBold
         case .large:
-            return .headings5
+            return .titleBold
         case .giant:
-            return .headings4
+            return .header2
         }
     }
 }

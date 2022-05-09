@@ -8,32 +8,27 @@
 import SwiftUI
 
 public extension Font {
-    // MARK: Heading
-    static let headings1 = Font.system(size: 40, weight: .bold, design: .rounded)
-    static let headings2 = Font.system(size: 32, weight: .bold, design: .rounded)
-    static let headings3 = Font.system(size: 24, weight: .bold, design: .rounded)
-    static let headings4 = Font.system(size: 20, weight: .bold, design: .rounded)
-    static let headings5 = Font.system(size: 16, weight: .bold, design: .rounded)
-    static let headings6 = Font.system(size: 14, weight: .bold, design: .rounded)
-    static let headings7 = Font.system(size: 12, weight: .bold, design: .rounded)
+    static let subRegular = Font.system(size: 12, weight: .regular, design: .rounded)
+    static let subMedium = Font.system(size: 12, weight: .medium, design: .rounded)
+    static let subBold = Font.system(size: 12, weight: .bold, design: .rounded)
 
-    // MARK: Lead
-    static let lead1 = Font.system(size: 40, design: .rounded)
-    static let lead2 = Font.system(size: 32, design: .rounded)
-    static let lead3 = Font.system(size: 24, design: .rounded)
-    static let lead4 = Font.system(size: 20, design: .rounded)
+    static let textRegular = Font.system(size: 14, weight: .regular, design: .rounded)
+    static let textMedium = Font.system(size: 14, weight: .medium, design: .rounded)
+    static let textBold = Font.system(size: 14, weight: .bold, design: .rounded)
+    
+    static let titleRegular = Font.system(size: 16, weight: .regular, design: .rounded)
+    static let titleMedium = Font.system(size: 16, weight: .medium, design: .rounded)
+    static let titleBold = Font.system(size: 16, weight: .bold, design: .rounded)
 
-    // MARK: BodyFont
-    static let body1 = Font.system(size: 16, design: .rounded)
-    static let body2 = Font.system(size: 14, design: .rounded)
-    static let body3 = Font.system(size: 12, design: .rounded)
+    static let header1 = Font.system(size: 24, weight: .bold, design: .rounded)
+    static let header2 = Font.system(size: 20, weight: .bold, design: .rounded)
 }
 
 public extension UIFont {
-    static let body1 = UIFont.rounded(ofSize: 16)
+    static let titleRegular = UIFont.rounded(ofSize: 16)
 
-    static let headings4 = UIFont.rounded(ofSize: 20, weight: .bold)
-    static let headings7 = UIFont.rounded(ofSize: 11, weight: .bold)
+    static let header2 = UIFont.rounded(ofSize: 20, weight: .bold)
+    static let tabBar = UIFont.rounded(ofSize: 11, weight: .bold)
 
     static func rounded(ofSize size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
         let systemFont = UIFont.systemFont(ofSize: size, weight: weight)

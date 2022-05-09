@@ -95,7 +95,7 @@ public struct DesignTextField: View {
                 if !title.isEmpty {
                     Text(title)
                         .foregroundColor(appColors.title)
-                        .font(.body2)
+                        .font(.textRegular)
                         .frame(height: 20)
                         .padding(.bottom, .xs)
                 }
@@ -114,7 +114,7 @@ public struct DesignTextField: View {
                         infoButtonTextAction()
                     }
                     .padding(.bottom, .xs)
-                    .font(.headings6)
+                    .font(.textBold)
                     .foregroundColor(appColors.trailingButton)
                 }
             }
@@ -148,7 +148,7 @@ public struct DesignTextField: View {
 
     var prefixView: some View {
         Text(prefix)
-            .font(.body1)
+            .font(.titleRegular)
             .foregroundColor(textColor)
             .padding([.leading], .m)
     }
@@ -168,7 +168,7 @@ public struct DesignTextField: View {
 
     func errorView(with text: String) -> some View {
         Text(text)
-            .font(.body2)
+            .font(.textRegular)
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.leading)
             .foregroundColor(borderColor)
@@ -177,7 +177,7 @@ public struct DesignTextField: View {
 
     func hintView() -> some View {
         Text(hint)
-            .font(.body2)
+            .font(.textRegular)
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.leading)
             .foregroundColor(appColors.hintText)
@@ -276,7 +276,7 @@ private struct EditorView: View {
                 prompt,
                 text: $text
             )
-                .font(.body1)
+                .font(.titleRegular)
                 .accentColor(cursorColor)
                 .foregroundColor(textColor)
                 .padding(.xs)
@@ -330,7 +330,7 @@ private struct SecureEditorView: View {
                 prompt: prompt,
                 isRevealed: isRevealed,
                 textColor: textColor,
-                font: .body1
+                font: .titleRegular
             )
                 .foregroundColor(textColor)
                 .accentColor(cursorColor)

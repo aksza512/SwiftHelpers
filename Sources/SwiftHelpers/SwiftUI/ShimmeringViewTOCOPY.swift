@@ -98,7 +98,6 @@ struct ShimmeringView_Previews: PreviewProvider {
             ZStack {
                 Card {
                     Text("asdfékasdéf")
-                        .font(.headings1)
                 }
                 .foregroundColor(Color.black)
             }

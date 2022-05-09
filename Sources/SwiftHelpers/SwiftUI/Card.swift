@@ -33,7 +33,7 @@ public struct Card<Content: View>: View {
             if let title = title {
                 HStack {
                     Text(title)
-                        .font(.headings4)
+                        .font(.header2)
                     Spacer()
                 }
             }
