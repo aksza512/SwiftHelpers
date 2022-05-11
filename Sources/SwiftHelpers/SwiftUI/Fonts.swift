@@ -19,7 +19,8 @@ public extension Font {
     static let titleRegular = Font.system(size: 16, weight: .regular, design: .rounded)
     static let titleMedium = Font.system(size: 16, weight: .medium, design: .rounded)
     static let titleBold = Font.system(size: 16, weight: .bold, design: .rounded)
-
+    
+    static let secondaryHeader = Font.system(size: 18, weight: .bold, design: .rounded)
     static let header1 = Font.system(size: 24, weight: .bold, design: .rounded)
     static let header2 = Font.system(size: 20, weight: .bold, design: .rounded)
 }
