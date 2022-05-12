@@ -189,11 +189,11 @@ public struct TabHeaderView: View {
                         if let image = tab.image {
                             image
                                 .foregroundColor(tabs.firstIndex(of: tab) == selectedTab ? titleColorSelected : titleColor)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .font(.system(size: 14, weight: tabs.firstIndex(of: tab) == selectedTab ? .bold : .regular, design: .rounded))
                         }
                         Text(tab.title)
                             .foregroundColor(tabs.firstIndex(of: tab) == selectedTab ? titleColorSelected : titleColor)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(.system(size: 14, weight: .regular, design: .rounded))
                             .padding(.vertical, 14)
                     }
                 }
@@ -252,7 +252,7 @@ struct DesignTabView_Previews: PreviewProvider {
         ZStack {
             DesignTabView()
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }
 
