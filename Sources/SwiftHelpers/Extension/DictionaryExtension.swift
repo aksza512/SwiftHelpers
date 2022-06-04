@@ -19,6 +19,13 @@ public extension Dictionary where Key == String, Value: Any {
         }
         return nil
     }
+    
+    mutating func safeAppend(anotherDict: [Key: Value]?) {
+        guard let anotherDict = anotherDict else { return }
+        for (key, value) in anotherDict {
+            self.updateValue(value, forKey: key)
+        }
+    }
 
     func castToObject<T: Decodable>() -> T? {
         let json = try? JSONSerialization.data(withJSONObject: self)

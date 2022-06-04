@@ -110,4 +110,12 @@ public extension Date {
 	init(milliseconds: Int64) {
 		self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
 	}
+    
+    func changeDays(by days: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: days, to: self)!
+    }
+
+    func changeSeconds(by seconds: Int) -> Date {
+        return Calendar.current.date(byAdding: .second, value: seconds, to: self)!
+    }
 }

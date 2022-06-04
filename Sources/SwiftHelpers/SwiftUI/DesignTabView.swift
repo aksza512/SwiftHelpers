@@ -193,7 +193,7 @@ public struct TabHeaderView: View {
                         }
                         Text(tab.title)
                             .foregroundColor(tabs.firstIndex(of: tab) == selectedTab ? titleColorSelected : titleColor)
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .font(.system(size: 16, weight: .regular, design: .rounded))
                             .padding(.vertical, 14)
                     }
                 }
