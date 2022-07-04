@@ -36,14 +36,13 @@ open class RouterConfig: NSObject {
 	open var needLoginForRequestCompletion: NeedLoginForRequestCompletionBlock?
 
 	open func callRefreshCompletions() {
+        let lock = NSLock()
 		for completion in refreshTokenCompletions {
 			completion()
 		}
-		removeAllCompletions()
-	}
-	
-	open func removeAllCompletions() {
-		refreshTokenCompletions.removeAll()
+        lock.lock()
+        refreshTokenCompletions.removeAll()
+        lock.unlock()
 	}
 
 	public override init() {

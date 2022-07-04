@@ -12,6 +12,7 @@ public class Router<T: EndPoint> {
 	let session = URLSession.shared
 	let routerConfig: RouterConfig
 	let logger: LoggerProtocol
+    var retry: Int = 2
 
 	public init(routerConfig: RouterConfig, logger: LoggerProtocol) {
 		self.routerConfig = routerConfig
@@ -54,7 +55,7 @@ public class Router<T: EndPoint> {
         do {
             var request = try self.buildRequest(from: endPoint)
 			addExtraHeaders(request: &request, isRefresh: isRefresh)
-			print(request.allHTTPHeaderFields ?? "")
+//			print(request.allHTTPHeaderFields ?? "")
             task = session.dataTask(with: request, completionHandler: { data, response, error in
 				// REQUEST HAS NEED LOGIN
 				let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn() ?? false
@@ -94,6 +95,11 @@ public class Router<T: EndPoint> {
 				// SERVER error
 				if let response = response as? HTTPURLResponse, self.isRequestFailed(response.statusCode) {
 					self.logger.error("RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], SERVER ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
+                    if response.statusCode == 400 && self.retry != 0 {
+                        self.retry -= 1
+                        self.request(endPoint, completion: completion)
+                        return
+                    }
 					if let shouldHandleError = self.routerConfig.routerConfigDelegate?.shouldHandleApplicationError(response.statusCode, (error as? NetworkError) ?? .unknown), !shouldHandleError {
 						DispatchQueue.main.async {
                             completion(.failure(.serverError(data, response, (error as? NetworkError) ?? .unknown, response.statusCode)))
@@ -111,8 +117,8 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
-//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
+//							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {
@@ -166,10 +172,13 @@ public class Router<T: EndPoint> {
     }
 	
 	func handleAuthorizationError<C: Codable>(_ data: Data?, _ endPoint: T, _ completion: @escaping (Result<C, NetworkError>) -> ()) {
+        let lock = NSLock()
 		let completionBlock: () -> Void = {
 			self.request(endPoint, completion: completion)
 		}
+        lock.lock()
 		routerConfig.refreshTokenCompletions.append(completionBlock)
+        lock.unlock()
 		routerConfig.routerConfigDelegate?.handleAuthorizationError(data: data, nil)
 	}
 
