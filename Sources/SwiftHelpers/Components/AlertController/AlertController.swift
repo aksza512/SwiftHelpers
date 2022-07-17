@@ -34,7 +34,11 @@ public class AlertController {
 	}
 
 	public func show() {
-		UIViewController.topMostViewController()?.present(uiAlertController, animated: true)
+        let vc = UIViewController.topMostViewController()
+        uiAlertController.popoverPresentationController?.sourceView = vc?.view
+        uiAlertController.popoverPresentationController?.sourceRect = CGRect(x: vc?.view.bounds.midX ?? 0, y: vc?.view.bounds.midY ?? 0, width: 0, height: 0)
+        uiAlertController.popoverPresentationController?.permittedArrowDirections = []
+		vc?.present(uiAlertController, animated: true)
 	}
 
 	public func show(in viewController: UIViewController, sourceView: UIView) {

@@ -71,6 +71,11 @@ public extension UIViewController {
        return keyWindow?.rootViewController?.topMostViewController()
 	}
 
+    static func topMostViewControllerWithTabbar() -> UIViewController? {
+       let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+       return keyWindow?.rootViewController?.topMostViewControllerWithTabbar()
+    }
+
 	func topMostViewController() -> UIViewController? {
 	   if let navigationController = self as? UINavigationController {
 		   return navigationController.topViewController?.topMostViewController()
@@ -88,6 +93,21 @@ public extension UIViewController {
 		   return self
 	   }
 	}
+    
+    func topMostViewControllerWithTabbar() -> UIViewController? {
+       if let navigationController = self as? UINavigationController {
+           return navigationController.topViewController?.topMostViewController()
+       }
+       else if let tabBarController = self as? UITabBarController {
+           return tabBarController
+       }
+       else if let presentedViewController = self.presentedViewController {
+           return presentedViewController.topMostViewController()
+       }
+       else {
+           return self
+       }
+    }
 
 	func add(_ child: UIViewController?, frame: CGRect? = nil, containerView: UIView? = nil, animate: Bool = false) {
 		guard let child = child else { return }
