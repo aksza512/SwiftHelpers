@@ -31,9 +31,17 @@ public extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
-    
+
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+    
+    func textEditorBackground<V>(@ViewBuilder _ content: () -> V) -> some View where V : View {
+        self
+            .onAppear {
+                UITextView.appearance().backgroundColor = .clear
+            }
+            .background(content())
     }
 }
 
