@@ -34,6 +34,7 @@ open class RouterConfig: NSObject {
 	open var extraHeaders: [String: String]?
 	open var refreshTokenCompletions = [RefreshTokenCompletionBlock]()
 	open var needLoginForRequestCompletion: NeedLoginForRequestCompletionBlock?
+    open var refreshTask: URLSessionTask?
 
 	open func callRefreshCompletions() {
         let lock = NSLock()

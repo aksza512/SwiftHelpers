@@ -51,6 +51,13 @@ public class Router<T: EndPoint> {
 	}
 
 	@discardableResult public func requestOrigin<C: Codable>(isRefresh: Bool, _ endPoint: T, completion: @escaping (Result<C, NetworkError>) -> ()) -> URLSessionTask? {
+        if routerConfig.refreshTask != nil && !isRefresh {
+            let completionBlock: () -> Void = {
+                self.request(endPoint, completion: completion)
+            }
+            routerConfig.refreshTokenCompletions.append(completionBlock)
+            return nil
+        }
 		var task: URLSessionTask?
         do {
             var request = try self.buildRequest(from: endPoint)
@@ -117,7 +124,7 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-//							self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
                             self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}

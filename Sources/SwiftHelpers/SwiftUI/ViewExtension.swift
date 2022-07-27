@@ -17,7 +17,7 @@ public extension View {
             }
         }
     }
-
+    
     @available(iOS 14.0, *)
     @ViewBuilder
     func redacted(when condition: Bool) -> some View {
@@ -27,11 +27,11 @@ public extension View {
             redacted(reason: .placeholder)
         }
     }
-
+    
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
-
+    
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
     }
@@ -43,7 +43,17 @@ public extension View {
             }
             .background(content())
     }
-}
+    
+    @ViewBuilder
+    func backgroundColor(_ color: Color) -> some View {
+        // TODO: ios16-tól mehet a dolog
+//        if #available(iOS 16, *) {
+//            self.scrollContentBackground(color)
+//        }
+//        else {
+            self.background(color)
+//        }
+    }}
 
 public struct RoundedCorner: Shape {
 
