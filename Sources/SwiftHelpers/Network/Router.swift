@@ -135,6 +135,9 @@ public class Router<T: EndPoint> {
 					}
 				} catch let jsonError {
 					self.logger.error("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], JSON PARSE FAILED:\(jsonError)")
+                    DispatchQueue.main.async {
+                        completion(.failure(.encodingFailed))
+                    }
 				}
             })
         } catch let buildReqError {
