@@ -58,6 +58,12 @@ public extension Date {
         return ret
     }
 
+    var day: Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let ret = calendar.component(.day, from: self)
+        return ret
+    }
+
 	var startOfWeek: Date? {
 	   let calendar = Calendar.current
 	   return calendar.dateInterval(of: .weekOfMonth, for: self)?.start
