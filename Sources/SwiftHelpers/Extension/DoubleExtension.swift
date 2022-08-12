@@ -13,4 +13,12 @@ public extension Double {
 		let divisor = pow(10.0, Double(places))
 		return (self * divisor).rounded() / divisor
 	}
+    
+    func formatDecimalEnglish() -> String {
+        let formater = NumberFormatter()
+        formater.groupingSeparator = ","
+        formater.numberStyle = .decimal
+        formater.maximumFractionDigits = 2
+        return formater.string(from: NSNumber(value: self)) ?? ""
+    }
 }
