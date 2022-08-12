@@ -58,12 +58,6 @@ public extension Date {
         return ret
     }
 
-    var day: Int {
-        let calendar = Calendar(identifier: .gregorian)
-        let ret = calendar.component(.day, from: self)
-        return ret
-    }
-
 	var startOfWeek: Date? {
 	   let calendar = Calendar.current
 	   return calendar.dateInterval(of: .weekOfMonth, for: self)?.start
@@ -83,6 +77,12 @@ public extension Date {
 		let calendar = Calendar.current
 		return calendar.dateInterval(of: .month, for: self)?.end
 	}
+
+    var dayNumber: Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let ret = calendar.component(.day, from: self)
+        return ret
+    }
 
 	var weekNumber: Int? {
 		let calendar = Calendar.current
@@ -116,9 +116,17 @@ public extension Date {
 	init(milliseconds: Int64) {
 		self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
 	}
-    
+
+    func changeYears(by years: Int) -> Date {
+        return Calendar.current.date(byAdding: .year, value: years, to: self)!
+    }
+
     func changeDays(by days: Int) -> Date {
         return Calendar.current.date(byAdding: .day, value: days, to: self)!
+    }
+
+    func changeMonths(by months: Int) -> Date {
+        return Calendar.current.date(byAdding: .month, value: months, to: self)!
     }
 
     func changeSeconds(by seconds: Int) -> Date {
