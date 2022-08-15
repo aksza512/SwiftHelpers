@@ -124,8 +124,8 @@ public class Router<T: EndPoint> {
 					if let data = data {
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
-                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
+                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {
