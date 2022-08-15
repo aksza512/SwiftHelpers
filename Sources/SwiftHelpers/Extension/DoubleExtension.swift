@@ -17,6 +17,7 @@ public extension Double {
     func formatDecimalEnglish() -> String {
         let formater = NumberFormatter()
         formater.groupingSeparator = ","
+        formater.decimalSeparator = "."
         formater.numberStyle = .decimal
         formater.maximumFractionDigits = 2
         return formater.string(from: NSNumber(value: self)) ?? ""
