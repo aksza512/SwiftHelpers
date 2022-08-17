@@ -83,6 +83,10 @@ public extension View {
                     view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
                 }
      }
+    
+    func onShake(perform action: @escaping () -> Void) -> some View {
+        self.modifier(DeviceShakeViewModifier(action: action))
+    }
 }
 
 public struct RoundedCorner: Shape {

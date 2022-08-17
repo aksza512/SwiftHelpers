@@ -15,4 +15,6 @@ import UIKit
 	static func isPhone() -> Bool {
 		return UIDevice.current.userInterfaceIdiom == .phone
 	}
+    
+    static let deviceDidShakeNotification = Notification.Name(rawValue: "deviceDidShakeNotification")
 }
