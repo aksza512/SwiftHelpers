@@ -15,15 +15,10 @@ public extension CLGeocoder {
             if error == nil {
                 let placeMark = placemarks?.last as? CLPlacemark
                 let isoCountryCode = placeMark?.isoCountryCode
-                var addressParts = placeMark?.addressDictionary?["FormattedAddressLines"] as? [String]
-                if addressParts?.count != 1 {
-                    addressParts?.removeLast()
-                }
-                var address = addressParts?.joined(separator: ", ")
-                if let postalCode = placeMark?.postalCode {
-                    let addressString = NSString(string: address ?? "")
-                    address = addressString.replacingOccurrences(of: postalCode + " ", with: "")
-                }
+                var strings: [String] = []
+                strings.safeAdd(placeMark?.locality)
+                strings.safeAdd(placeMark?.name)
+                let address = strings.joined(separator: ", ")
                 completionBlock(address, isoCountryCode == countryForValidation)
             }
         })

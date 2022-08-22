@@ -102,7 +102,7 @@ public struct RoundedCorner: Shape {
 
 private struct SafeAreaInsetsKey: EnvironmentKey {
     static var defaultValue: EdgeInsets {
-        UIApplication.shared.keyWindow?.safeAreaInsets.edgeInsets ?? EdgeInsets()
+        UIApplication.shared.firstKeyWindow?.safeAreaInsets.edgeInsets ?? EdgeInsets()
     }
 }
 
