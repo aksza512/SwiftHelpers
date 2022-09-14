@@ -69,6 +69,11 @@ public extension Array where Element: Any {
 		self.insert(object, at: at)
 	}
 
+    func safeAddNewArray(_ object: Element?, at: Int) -> Self {
+        guard let object = object else { return self }
+        return self + [object]
+    }
+
 	mutating func move(from oldIndex: Index, to newIndex: Index) {
 		if oldIndex == newIndex { return }
 		if abs(newIndex - oldIndex) == 1 { return self.swapAt(oldIndex, newIndex) }
