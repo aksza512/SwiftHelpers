@@ -9,6 +9,10 @@ import SwiftUI
 import UIKit
 
 public extension View {
+    var anyView: AnyView {
+        AnyView(self)
+    }
+
     @ViewBuilder
     func onAppear(after timeInterval: TimeInterval, action: @escaping () -> Void) -> some View {
         self.onAppear {
