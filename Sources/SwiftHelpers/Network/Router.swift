@@ -73,6 +73,11 @@ public class Router<T: EndPoint> {
 				// CLIENT error
 				if error != nil || data == nil {
 					self.logger.error("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], CLIENT ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")], error: (\(error?.localizedDescription ?? ""))")
+                    if self.retry != 0 {
+                        self.retry -= 1
+                        self.request(endPoint, completion: completion)
+                        return
+                    }
 					DispatchQueue.main.async {
 						completion(.failure(.clientError((error as? NetworkError) ?? .unknown, (response as? HTTPURLResponse)?.statusCode)))
 					}
@@ -125,7 +130,7 @@ public class Router<T: EndPoint> {
 //                        self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
 						let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
+                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {

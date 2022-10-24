@@ -32,6 +32,16 @@ public extension Bundle {
 			fatalError("Failed to decode \(file) from bundle: \(error.localizedDescription)")
 		}
 	}
+
+    func decodeToDict(fromFile: String) -> [String: Any]? {
+        guard let url = self.url(forResource: fromFile, withExtension: nil) else {
+            return nil
+        }
+        guard let data = try? Data(contentsOf: url) else {
+            return nil
+        }
+        return (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)).flatMap { $0 as? [String: Any] }
+    }
 	
 	func loadFirst(fromNib: String) -> Any? {
 		return loadNibNamed(fromNib, owner: nil, options: nil)?.first
