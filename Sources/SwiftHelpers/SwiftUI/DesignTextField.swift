@@ -36,6 +36,7 @@ public struct DesignTextField: View {
         public var textDisabled: Color = Color(.secondaryLabel)
         public var deleteButton: Color = Color(.secondaryLabel.lighter(by: 70))
         public var eye: Color = Color(.secondaryLabel)
+        public var placeholder: Color = Color(.secondaryLabel)
 
         public init() {
 
@@ -273,12 +274,13 @@ private struct EditorView: View {
     var body: some View {
         HStack {
             TextField(
-                prompt,
+                "",
                 text: $text
             )
                 .font(.titleRegular)
                 .accentColor(cursorColor)
                 .foregroundColor(textColor)
+                .placeholder(prompt, color: appColors.placeholder, when: text.isEmpty)
                 .padding(.xs)
 
             switch state {
@@ -327,13 +329,14 @@ private struct SecureEditorView: View {
         HStack {
             CustomSecureTextField(
                 text: $text,
-                prompt: prompt,
+                prompt: "",
                 isRevealed: isRevealed,
                 textColor: textColor,
                 font: .titleRegular
             )
                 .foregroundColor(textColor)
                 .accentColor(cursorColor)
+                .placeholder(prompt, color: appColors.placeholder, when: text.isEmpty)
                 .padding()
                 .offset(x: -8)
 
@@ -368,6 +371,11 @@ struct CustomSecureTextField: UIViewRepresentable {
 
         func textFieldDidChangeSelection(_ textField: UITextField) {
             text = textField.text ?? ""
+        }
+
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return true
         }
     }
 

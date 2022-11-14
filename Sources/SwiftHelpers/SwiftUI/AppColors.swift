@@ -48,6 +48,7 @@ public protocol AppTextFieldColors {
     var textDisabled: Color { get }
     var deleteButton: Color { get }
     var eye: Color { get }
+    var placeholder: Color { get }
 }
 
 public extension UIColor {

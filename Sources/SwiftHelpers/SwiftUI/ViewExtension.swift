@@ -91,6 +91,20 @@ public extension View {
     func onShake(perform action: @escaping () -> Void) -> some View {
         self.modifier(DeviceShakeViewModifier(action: action))
     }
+
+    func placeholder<Content: View>(when shouldShow: Bool, alignment: Alignment = .leading, @ViewBuilder placeholder: () -> Content) -> some View {
+         ZStack(alignment: alignment) {
+             placeholder().opacity(shouldShow ? 1 : 0)
+             self
+         }
+     }
+
+    func placeholder(_ text: String, color: Color, when shouldShow: Bool, alignment: Alignment = .leading) -> some View {
+        placeholder(when: shouldShow, alignment: alignment) {
+            Text(text)
+                .foregroundColor(color)
+        }
+    }
 }
 
 public struct RoundedCorner: Shape {
