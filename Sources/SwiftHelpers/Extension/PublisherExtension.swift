@@ -17,10 +17,7 @@ public extension Publisher where Failure == Never {
         }
     }
 
-    func weakSink<T: AnyObject>(
-        _ weaklyCaptured: T,
-        receiveValue: @escaping (T, Self.Output) -> Void
-    ) -> AnyCancellable {
+    func weakSink<T: AnyObject>(_ weaklyCaptured: T, receiveValue: @escaping (T, Self.Output) -> Void) -> AnyCancellable {
         sink { [weak weaklyCaptured] output in
             guard let strongRef = weaklyCaptured else { return }
             receiveValue(strongRef, output)
