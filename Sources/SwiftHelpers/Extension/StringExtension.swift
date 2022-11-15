@@ -17,6 +17,10 @@ public extension StringProtocol {
 }
 
 public extension String {
+    var localized: String {
+        NSLocalizedString(self, comment: "")
+    }
+
     func convertToDictionary() -> [String: Any]? {
         if let data = self.data(using: .utf8) {
             do {
