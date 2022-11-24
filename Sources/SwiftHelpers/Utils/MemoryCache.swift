@@ -8,15 +8,17 @@
 import Foundation
 
 @available(iOS 15.0, *)
+public enum CacheExpDate {
+    case seconds(Int)
+    case never
+}
+
+@available(iOS 15.0, *)
 public struct MemoryCache<Key: Hashable, Value: Codable> {
     public struct CacheExpiry<Value> {
-        public enum ExpDate {
-            case seconds(Int)
-            case never
-        }
 
         let value: Value
-        let exp: ExpDate
+        let exp: CacheExpDate
         let created: TimeInterval
         var isExpired: Bool {
             switch exp {
@@ -29,7 +31,7 @@ public struct MemoryCache<Key: Hashable, Value: Codable> {
             }
         }
 
-        public init(value: Value, exp: ExpDate, created: TimeInterval = Date.now.timeIntervalSince1970) {
+        public init(value: Value, exp: CacheExpDate, created: TimeInterval = Date.now.timeIntervalSince1970) {
             self.value = value
             self.exp = exp
             self.created = created
@@ -47,7 +49,7 @@ public struct MemoryCache<Key: Hashable, Value: Codable> {
         return cachedData[key]?.value
     }
 
-    public mutating func setValue(_ value: Value?, forKey: Key, expiry: CacheExpiry<Value>.ExpDate = .seconds(5)) {
+    public mutating func setValue(_ value: Value?, forKey: Key, expiry: CacheExpDate = .seconds(5)) {
         guard let value else { return }
         guard let cachedValue = cachedData[forKey] else {
             cachedData[forKey] = .init(value: value, exp: expiry)
