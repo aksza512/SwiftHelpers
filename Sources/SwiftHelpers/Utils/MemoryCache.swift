@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @available(iOS 15.0, *)
 public enum CacheExpDate {
@@ -17,8 +18,8 @@ public enum CacheExpDate {
 public struct MemoryCache<Key: Hashable, Value: Codable> {
     public struct CacheExpiry<Value> {
 
-        let value: Value
-        let exp: CacheExpDate
+        public let value: Value
+        public let exp: CacheExpDate
         let created: TimeInterval
         var isExpired: Bool {
             switch exp {
@@ -38,13 +39,15 @@ public struct MemoryCache<Key: Hashable, Value: Codable> {
         }
     }
 
-    private var cachedData: [Key: CacheExpiry<Value>]
+    public var cachedData: [Key: CacheExpiry<Value>]
+
+    public var resetCachePublisher = PassthroughSubject<Bool, Never>()
 
     public init(cachedData: [Key : CacheExpiry<Value>] = [:]) {
         self.cachedData = cachedData
     }
 
-    public func getValue(key: Key?) -> Value? {
+    public func getCacheData(key: Key?) -> Value? {
         guard let key else { return nil }
         return cachedData[key]?.value
     }
@@ -65,5 +68,19 @@ public struct MemoryCache<Key: Hashable, Value: Codable> {
     public func isExpired(key: Key?) -> Bool {
         guard let key, let cacheExpiry: CacheExpiry<Value> = cachedData[key] else { return true }
         return cacheExpiry.isExpired
+    }
+
+    public mutating func resetCache() {
+        cachedData.removeAll()
+        resetCachePublisher.send(true)
+    }
+
+    public func isEmpty() -> Bool {
+        return cachedData.isEmpty
+    }
+
+    public func allValues() -> [Value] {
+        let allValue = Array(cachedData.values.compactMap({ $0.value }))
+        return allValue
     }
 }

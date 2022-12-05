@@ -65,6 +65,7 @@ public struct DesignButton: View {
     let image: Image?
     let bgrColor: Color?
     let spacer: Bool
+    let isLoading: Bool
     let action: () -> Void
 
     public init(
@@ -75,6 +76,7 @@ public struct DesignButton: View {
         image: Image? = nil,
         bgrColor: Color? = nil,
         spacer: Bool = false,
+        isLoading: Bool = false,
         action: @escaping () -> Void) {
             self.style = style
             self.width = width
@@ -83,6 +85,7 @@ public struct DesignButton: View {
             self.image = image
             self.bgrColor = bgrColor
             self.spacer = spacer
+            self.isLoading = isLoading
             self.action = action
         }
 
@@ -92,24 +95,33 @@ public struct DesignButton: View {
                 action()
             },
             label: {
-                HStack {
-                    if width == .fullSize {
-                        Spacer()
+                ZStack {
+                    HStack {
+                        if width == .fullSize {
+                            Spacer()
+                        }
+                        if let image = self.image {
+                            image
+                                .resizable()
+                                .frame(width: imageSize, height: imageSize)
+                        }
+                        if spacer { Spacer() }
+                        if let title = title, hasTitle {
+                            Text(title)
+                                .multilineTextAlignment(.center)
+                        }
+                        if width == .fullSize {
+                            Spacer()
+                        }
+                        if spacer { Spacer() }
                     }
-                    if let image = self.image {
-                        image
-                            .resizable()
-                            .frame(width: imageSize, height: imageSize)
+                    if isLoading {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .tint(.black)
+                        }
                     }
-                    if spacer { Spacer() }
-                    if let title = title, hasTitle {
-                        Text(title)
-                            .multilineTextAlignment(.center)
-                    }
-                    if width == .fullSize {
-                        Spacer()
-                    }
-                    if spacer { Spacer() }
                 }
                 .padding(.horizontal, padding)
                 .frame(minWidth: height)
