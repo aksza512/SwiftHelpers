@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MemoryCache.swift
 //  
 //
 //  Created by Alexa Márk on 2022. 11. 24..
@@ -47,8 +47,16 @@ public struct MemoryCache<Key: Hashable, Value: Codable> {
         self.cachedData = cachedData
     }
 
-    public func getCacheData(key: Key?) -> Value? {
+    public func getData(key: Key?) -> Value? {
         guard let key else { return nil }
+        return cachedData[key]?.value
+    }
+
+    public func getData(key: Key?, nilIfExpired: Bool) -> Value? {
+        guard let key else { return nil }
+        if nilIfExpired {
+            return isExpired(key: key) ? nil : cachedData[key]?.value
+        }
         return cachedData[key]?.value
     }
 
