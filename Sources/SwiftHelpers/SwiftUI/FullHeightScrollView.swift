@@ -18,7 +18,7 @@ public struct FullHeightScrollView<Content: View>: View {
     public var body: some View {
         GeometryReader { geometry in
             ScrollView(showsIndicators: false) {
-                content().frame(minHeight: geometry.size.height)
+                content().frame(minHeight: geometry.size.height, alignment: .top)
             }
         }
     }

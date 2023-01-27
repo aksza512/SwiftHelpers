@@ -50,7 +50,7 @@ public extension View {
     
     @ViewBuilder
     func backgroundColor(_ color: Color) -> some View {
-        // TODO: ios16-tól mehet a dolog
+#warning("TODO: ios16-tól mehet a dolog")
 //        if #available(iOS 16, *) {
 //            self.scrollContentBackground(color)
 //        }
@@ -99,9 +99,10 @@ public extension View {
          }
      }
 
-    func placeholder(_ text: String, color: Color, when shouldShow: Bool, alignment: Alignment = .leading) -> some View {
+    func placeholder(_ text: String, font: Font = .textMedium,  color: Color, when shouldShow: Bool, alignment: Alignment = .leading) -> some View {
         placeholder(when: shouldShow, alignment: alignment) {
             Text(text)
+                .font(font)
                 .foregroundColor(color)
         }
     }
