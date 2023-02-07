@@ -7,18 +7,21 @@
 
 import SwiftUI
 
+@available(iOS 15.0, *)
 public struct FullHeightScrollView<Content: View>: View {
-    @ViewBuilder let content: () -> Content
+    @ViewBuilder let content: (ScrollViewProxy) -> Content
     public init(
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping (ScrollViewProxy) -> Content
     ) {
         self.content = content
     }
 
     public var body: some View {
-        GeometryReader { geometry in
-            ScrollView(showsIndicators: false) {
-                content().frame(minHeight: geometry.size.height, alignment: .top)
+        ScrollViewReader { proxy in
+            GeometryReader { geometry in
+                ScrollView(showsIndicators: false) {
+                    content(proxy).frame(minHeight: geometry.size.height, alignment: .top)
+                }
             }
         }
     }
