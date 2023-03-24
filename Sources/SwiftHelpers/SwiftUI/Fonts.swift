@@ -23,6 +23,8 @@ public extension Font {
     static let secondaryHeader = Font.system(size: 18, weight: .bold, design: .rounded)
     static let header1 = Font.system(size: 24, weight: .bold, design: .rounded)
     static let header2 = Font.system(size: 20, weight: .bold, design: .rounded)
+    static let header3 = Font.system(size: 18, weight: .bold, design: .rounded)
+    static let header4 = Font.system(size: 17, weight: .bold, design: .rounded)
 }
 
 public extension UIFont {

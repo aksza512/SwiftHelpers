@@ -62,7 +62,7 @@ public class Router<T: EndPoint> {
         do {
             var request = try self.buildRequest(from: endPoint)
 			addExtraHeaders(request: &request, isRefresh: isRefresh)
-//			print(request.allHTTPHeaderFields ?? "")
+			print(request.allHTTPHeaderFields ?? "")
             task = session.dataTask(with: request, completionHandler: { data, response, error in
 				// REQUEST HAS NEED LOGIN
 				let isUserLoggedIn = self.routerConfig.routerConfigDelegate?.isUserLoggedIn() ?? false
@@ -87,6 +87,9 @@ public class Router<T: EndPoint> {
 				// 403
 				if let response = response as? HTTPURLResponse, self.isRefreshTokenError(response.statusCode) {
 					self.logger.error("RES \(response.statusCode): [\(request.url?.absoluteString ?? "")], REFRESH TOKEN ERROR: [\(String(data: data ?? Data(), encoding: .utf8) ?? "")]")
+                    DispatchQueue.main.async {
+                        completion(.failure(.error403(data, response)))
+                    }
 					self.handleLogout()
 					return
 				}
@@ -125,17 +128,18 @@ public class Router<T: EndPoint> {
 					return
 				}
 				// MIME error
-				guard let mime = response?.mimeType, mime == "application/json" || mime == "text/plain" else {
-					self.logger.error("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], WRONG MIME TYPE, error: (\(error?.localizedDescription ?? ""))")
-					return
-				}
+//				guard let mime = response?.mimeType, mime == "application/json" || mime == "text/plain" else {
+//					self.logger.error("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], WRONG MIME TYPE, error: (\(error?.localizedDescription ?? ""))")
+//					return
+//				}
 				// PARSE json
 				do {
 					if let data = data {
-                        self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
-						let json = try JSONDecoder().decode(C.self, from: data)
+                        self.logger.warning("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")], DATA: [\(String(data: data, encoding: .utf8) ?? "")]")
+//                        let tmpData = data.isEmpty ? "".data(using: .utf8) ?? Data() : data
+                        let json = try JSONDecoder().decode(C.self, from: data)
 						DispatchQueue.main.async {
-//                            self.logger.info("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
+//                            self.logger.warning("RES \((response as? HTTPURLResponse)?.statusCode ?? -1): [\(request.url?.absoluteString ?? "")]")
 							completion(.success(json))
 						}
 					} else {

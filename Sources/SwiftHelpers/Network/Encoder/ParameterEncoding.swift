@@ -54,5 +54,6 @@ public indirect enum NetworkError : Error {
     case clientError(_ error: NetworkError, _ statusCode: Int?)
 	case serverError(_ data: Data?, _ response: HTTPURLResponse?, _ error: NetworkError?, _ statusCode: Int?)
 	case error401(_ data: Data?, _ response: HTTPURLResponse?)
+    case error403(_ data: Data?, _ response: HTTPURLResponse?)
 	case unknown
 }
