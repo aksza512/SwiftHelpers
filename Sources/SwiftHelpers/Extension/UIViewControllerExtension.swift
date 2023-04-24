@@ -126,7 +126,7 @@ public extension UIViewController {
 		}
 		if let containerView = containerView {
 			child.view.translatesAutoresizingMaskIntoConstraints = false
-			child.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+            child.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
 			child.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
 			child.view.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
 			child.view.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true

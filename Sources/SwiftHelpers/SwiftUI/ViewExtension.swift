@@ -136,3 +136,19 @@ public extension EnvironmentValues {
         self[SafeAreaInsetsKey.self]
     }
 }
+
+public struct Shake: GeometryEffect {
+    var amount: CGFloat = 10
+    var shakesPerUnit = 4
+    public var animatableData: CGFloat
+
+    public init(animatableData: CGFloat) {
+        self.animatableData = animatableData
+    }
+
+    public func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(CGAffineTransform(translationX:
+            amount * sin(animatableData * .pi * CGFloat(shakesPerUnit)),
+            y: 0))
+    }
+}
