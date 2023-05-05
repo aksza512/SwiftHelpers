@@ -21,6 +21,12 @@ public extension String {
         NSLocalizedString(self, comment: "")
     }
 
+    var capitalizedFirstLetter: String {
+        let firstLetter = self.prefix(1).capitalized
+        let remainingLetters = self.dropFirst().lowercased()
+        return firstLetter + remainingLetters
+    }
+
     func convertToDictionary() -> [String: Any]? {
         if let data = self.data(using: .utf8) {
             do {
